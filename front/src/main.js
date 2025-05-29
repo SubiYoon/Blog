@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { Dialog, Quasar } from 'quasar'
+import { NotifyPlugin } from '@/components/notify/js/notify.js'
 
 import App from './App.vue'
 import router from './router'
@@ -14,7 +15,7 @@ const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
 app.use(pinia)
-
+app.use(NotifyPlugin)
 app.use(router)
 app.use(Quasar, {
     plugins: {
