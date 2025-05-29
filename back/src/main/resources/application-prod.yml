@@ -1,0 +1,11 @@
+spring:
+  servlet:
+    multipart:
+      location: /nas/project/blog/blogTempFile
+
+blog:
+  file:
+    path: /nas/project/blog
+
+origin:
+  url: https://blog.devstat.com

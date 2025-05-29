@@ -1,0 +1,6 @@
+blog:
+  file:
+    path: /Users/ABCD/blogTempFile
+
+origin:
+  url: http://localhost:8903
