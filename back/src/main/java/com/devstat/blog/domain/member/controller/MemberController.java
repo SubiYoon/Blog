@@ -34,4 +34,8 @@ public class MemberController {
         return ResponseEntity.ok(StatusCode.SUCCESS);
     }
 
+    @GetMapping("/temp")
+    public ResponseEntity<String> temp() {
+        return ResponseEntity.ok("가냐?");
+    }
 }
