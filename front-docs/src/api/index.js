@@ -1,10 +1,6 @@
 import axios from 'axios'
 
-export const $axios = axios.create({
-    headers: {
-        'Content-Type': 'application/json',
-    },
-})
+export const $axios = axios.create({})
 
 $axios.interceptors.request.use(
     function (config) {

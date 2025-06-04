@@ -31,25 +31,19 @@ public class Member extends BaseTimeEntity implements UserDetails, Persistable<S
     @Column(length = 10, nullable = false)
     private String name;
     private String password;
-    @Column(length = 8, nullable = false)
-    private String birthday;
-
-    @LastModifiedBy
-    private String updateBy;
 
     @Enumerated(EnumType.STRING)
     private RoleCode role;
 
-    private Member(String id, String name, String password, String birthday) {
+    private Member(String id, String name, String password) {
         this.id = id;
         this.name = name;
         this.password = password;
-        this.birthday = birthday;
         this.role = RoleCode.NOT_ALLOW;
     }
 
-    public static Member of(String id, String name, String password, String birthday) {
-        return new Member(id, name, password, birthday);
+    public static Member of(String id, String name, String password) {
+        return new Member(id, name, password);
     }
 
     @Override
@@ -96,10 +90,6 @@ public class Member extends BaseTimeEntity implements UserDetails, Persistable<S
 
     public void changePassword(String password) {
         this.password = password;
-    }
-
-    public void changeRole(RoleCode role) {
-        this.role = role;
     }
 
 }

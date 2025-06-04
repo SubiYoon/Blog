@@ -1,16 +1,9 @@
-// @ts-check
-// `@type` JSDoc annotations allow editor autocompletion and type checking
-// (when paired with `@ts-check`).
-// There are various equivalent ways to declare your Docusaurus config.
-// See: https://docusaurus.io/docs/api/docusaurus-config
-
 import { themes as prismThemes } from 'prism-react-renderer'
-import { $axios } from '/src/api/index.js'
-
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+import { $axios } from './src/api/index.js'
 
 /** @type {import('@docusaurus/types').Config} */
-const config = {
+export default async function createConfigAsync() {
+    let config = {
     title: 'My Site',
     tagline: 'Dinosaurs are cool',
     favicon: 'img/favicon.ico',
@@ -80,7 +73,7 @@ const config = {
             // Replace with your project's social card
             image: 'img/docusaurus-social-card.jpg',
             navbar: {
-                title: 'My Site',
+                title: 'ABCD',
                 logo: {
                     alt: 'My Site Logo',
                     src: 'img/logo.svg',
@@ -94,7 +87,12 @@ const config = {
                     },
                     { to: '/blog', label: 'Blog', position: 'left' },
                     {
-                        href: 'https://github.com/facebook/docusaurus',
+                        href: '/login',
+                        label: 'Login',
+                        position: 'right',
+                    },
+                    {
+                        href: 'https://github.com/SubiYoon',
                         label: 'GitHub',
                         position: 'right',
                     },
@@ -138,7 +136,7 @@ const config = {
                             },
                             {
                                 label: 'GitHub',
-                                href: 'https://github.com/facebook/docusaurus',
+                                href: 'https://github.com/SubiYoon',
                             },
                         ],
                     },
@@ -150,18 +148,23 @@ const config = {
                 darkTheme: prismThemes.dracula,
             },
         }),
-}
+    }
 
-const test = 1
-if (test === 1) {
-    config.themeConfig.navbar.items.push({
-        to: '/test',
-        label: 'Test',
+    await $axios.get('http://localhost:8903/ABCD').then(res => {
+        config.themeConfig.navbar.items.push({
+            to: '/member',
+            label: res.data,
+        })
+        config.themeConfig.navbar.items.push({
+            to: '/member',
+            label: res.data,
+        })
+        config.themeConfig.navbar.items.push({
+            to: '/member',
+            label: res.data,
+        })
+        console.log(res.data);
     })
+
+    return config
 }
-
-$axios.get('http://localhost:8903/member/temp').then(res => {
-    console.log(res.data)
-})
-
-export default config

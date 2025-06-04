@@ -65,11 +65,10 @@ public class SecurityConfig {
                 //인증 인가가 필요한 URL을 지정
                 .authorizeHttpRequests(requests -> requests
                         //특정 패턴의 URL은 인증은 패스(permitAll())
-                        .requestMatchers(HttpMethod.GET, "/member/temp").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/ABCD").permitAll()
                         .requestMatchers(HttpMethod.GET, "/startup").permitAll()
                         .requestMatchers(HttpMethod.GET, "/readiness").permitAll()
                         .requestMatchers(HttpMethod.GET, "/liveness").permitAll()
-                        .requestMatchers("/video/tus/file/upload/**").permitAll()
                          //나머지 요청은 전부 허용
                         .anyRequest().authenticated()
                 )
