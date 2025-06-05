@@ -10,18 +10,18 @@ import java.time.LocalDateTime;
 @Setter
 public class MemberDto {
 
-    private String id;
+    private String alias;
     private String name;
-    private String birthday;
     private String role;
+    private String linkPath;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
 
     public MemberDto(Member member) {
-        this.id = member.getId();
+        this.alias = member.getId();
         this.name = member.getName();
-        this.birthday = member.getBirthday();
         this.role = member.getRole().toString();
+        this.linkPath = member.getLinkPath();
         this.createDate = member.getCreateDate();
         this.updateDate = member.getUpdateDate();
     }

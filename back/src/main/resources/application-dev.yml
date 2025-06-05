@@ -4,3 +4,9 @@ blog:
 
 origin:
   url: http://localhost:8903
+
+init:
+  user:
+    alias: ENC(Q3j6aggVkiZ/oTty0xFg5Q==)
+    name: ENC(gQ3xKbW+4R/2zjouy7xGJL+3Lo1I36Qy)
+    password: ENC(83BIqOEgGK/btBWJ1m5GFS0qXXcUwlPM)

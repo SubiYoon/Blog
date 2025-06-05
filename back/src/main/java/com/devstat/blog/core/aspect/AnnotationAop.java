@@ -38,7 +38,6 @@ public class AnnotationAop {
             if (member != null) {
                 dto.setAccountId(member.getId());
                 dto.setAccountName(member.getName());
-                dto.setAccountBirthday(member.getBirthday());
                 dto.setAccountRole(member.getRole());
             } else {
                 log.warn("Member is null, unable to inject account info");

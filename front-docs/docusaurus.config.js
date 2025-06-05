@@ -14,7 +14,7 @@ export default async function createConfigAsync() {
     },
 
     // Set the production url of your site here
-    url: 'https://your-docusaurus-site.example.com',
+    url: 'https://blog.devstat.com',
     // Set the /<baseUrl>/ pathname under which your site is served
     // For GitHub pages deployment, it is often '/<projectName>/'
     baseUrl: '/',
@@ -42,6 +42,7 @@ export default async function createConfigAsync() {
             ({
                 docs: {
                     sidebarPath: './sidebars.js',
+                    path: 'C:\\Users\\ulim\\iCloudDrive\\Desktop\\Work',
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     editUrl: 'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
@@ -80,12 +81,21 @@ export default async function createConfigAsync() {
                 },
                 items: [
                     {
-                        type: 'docSidebar',
-                        sidebarId: 'tutorialSidebar',
+                        to: '/ABCD',
+                        label: 'Who am I?' ,
                         position: 'left',
-                        label: 'Tutorial',
                     },
-                    { to: '/blog', label: 'Blog', position: 'left' },
+                    {
+                        to: '/portfolio',
+                        label: 'Portfolio',
+                        position: 'left',
+                    },
+                    {
+                        type: 'docSidebar',
+                        sidebarId: 'Blog',
+                        position: 'left',
+                        label: 'Blog',
+                    },
                     {
                         href: '/login',
                         label: 'Login',
@@ -151,18 +161,9 @@ export default async function createConfigAsync() {
     }
 
     await $axios.get('http://localhost:8903/ABCD').then(res => {
-        config.themeConfig.navbar.items.push({
-            to: '/member',
-            label: res.data,
-        })
-        config.themeConfig.navbar.items.push({
-            to: '/member',
-            label: res.data,
-        })
-        config.themeConfig.navbar.items.push({
-            to: '/member',
-            label: res.data,
-        })
+        let result = res.data;
+
+        config.title = result.memberInfo.alias;
         console.log(res.data);
     })
 

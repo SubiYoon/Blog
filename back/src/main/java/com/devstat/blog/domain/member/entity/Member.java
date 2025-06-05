@@ -7,9 +7,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.domain.Persistable;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,29 +19,37 @@ import java.util.List;
 @Entity
 @Getter
 @Setter(AccessLevel.PRIVATE)
-@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseTimeEntity implements UserDetails, Persistable<String> {
 
     @Id
-    @Column(name = "member_id")
+    @Column(name = "member_alias")
     private String id;
     @Column(length = 10, nullable = false)
     private String name;
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
     private RoleCode role;
 
-    private Member(String id, String name, String password) {
+    @Column(name = "link_path", length = 100, nullable = false)
+    private String linkPath;
+
+    private Member(String id, String name, String password, RoleCode role, String linkPath) {
         this.id = id;
         this.name = name;
         this.password = password;
-        this.role = RoleCode.NOT_ALLOW;
+        this.role = role;
+        this.linkPath = linkPath;
     }
 
-    public static Member of(String id, String name, String password) {
-        return new Member(id, name, password);
+    public static Member of(String id, String name, String password, String linkPath) {
+        return new Member(id, name, password, RoleCode.USER, linkPath);
+    }
+
+    public static Member of(String id, String name, String password, RoleCode role, String linkPath) {
+        return new Member(id, name, password, role, linkPath);
     }
 
     @Override

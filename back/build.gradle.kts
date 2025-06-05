@@ -53,7 +53,7 @@ dependencies {
     developmentOnly("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0")
 
 
-	developmentOnly("com.h2database:h2")
+	developmentOnly("com.h2database:h2:1.4.200")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
