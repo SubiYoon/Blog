@@ -65,7 +65,7 @@ public class SecurityConfig {
                 //인증 인가가 필요한 URL을 지정
                 .authorizeHttpRequests(requests -> requests
                         //특정 패턴의 URL은 인증은 패스(permitAll())
-                        .requestMatchers(HttpMethod.GET, "/ABCD").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/info/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/startup").permitAll()
                         .requestMatchers(HttpMethod.GET, "/readiness").permitAll()
                         .requestMatchers(HttpMethod.GET, "/liveness").permitAll()
@@ -114,7 +114,7 @@ public class SecurityConfig {
         config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("*", config);
+        source.registerCorsConfiguration("/**", config);
 
         return source;
     }

@@ -40,7 +40,8 @@ public class TestDataInit {
                 initUserName,
                 passwordEncoder.encode(initUserPassword),
                 RoleCode.ADMIN,
-                "C:\\Users\\ulim\\iCloudDrive\\Desktop\\Work"
+                "C:\\Users\\ulim\\iCloudDrive\\Desktop\\Work",
+                "https://abctodev.notion.site/B-E-a7b07fca67da4327b00f1448d645de59?source=copy_link"
         );
 
         em.persist(member);

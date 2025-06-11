@@ -36,20 +36,24 @@ public class Member extends BaseTimeEntity implements UserDetails, Persistable<S
     @Column(name = "link_path", length = 100, nullable = false)
     private String linkPath;
 
-    private Member(String id, String name, String password, RoleCode role, String linkPath) {
+    @Column(name = "notion_url")
+    private String notionUrl;
+
+    private Member(String id, String name, String password, RoleCode role, String linkPath, String notionUrl) {
         this.id = id;
         this.name = name;
         this.password = password;
         this.role = role;
         this.linkPath = linkPath;
+        this.notionUrl = notionUrl;
     }
 
-    public static Member of(String id, String name, String password, String linkPath) {
-        return new Member(id, name, password, RoleCode.USER, linkPath);
+    public static Member of(String id, String name, String password, String linkPath, String notionUrl) {
+        return new Member(id, name, password, RoleCode.USER, linkPath, notionUrl);
     }
 
-    public static Member of(String id, String name, String password, RoleCode role, String linkPath) {
-        return new Member(id, name, password, role, linkPath);
+    public static Member of(String id, String name, String password, RoleCode role, String linkPath, String notionUrl) {
+        return new Member(id, name, password, role, linkPath, notionUrl);
     }
 
     @Override

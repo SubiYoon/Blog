@@ -38,7 +38,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        if(request.getRequestURI().equals("/ABCD")
+        if(request.getRequestURI().contains("/info/")
                 || request.getRequestURI().equals("/startup")
                 || request.getRequestURI().equals("/liveness")
                 || request.getRequestURI().equals("/readiness")

@@ -1,5 +1,5 @@
 import { themes as prismThemes } from 'prism-react-renderer'
-import { $axios } from './src/api/index.js'
+import { $axios } from './src/api'
 
 /** @type {import('@docusaurus/types').Config} */
 export default async function createConfigAsync() {
@@ -41,11 +41,10 @@ export default async function createConfigAsync() {
             /** @type {import('@docusaurus/preset-classic').Options} */
             ({
                 docs: {
+                    routeBasePath: '/',
                     sidebarPath: './sidebars.js',
-                    path: 'C:\\Users\\ulim\\iCloudDrive\\Desktop\\Work',
-                    // Please change this to your repo.
-                    // Remove this to remove the "edit this page" links.
-                    editUrl: 'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+                    // path: 'C:\\Users\\ulim\\iCloudDrive\\Desktop\\Work',
+                    path: '/Users/ABCD/Develop/Study/velog',
                 },
                 blog: {
                     showReadingTime: true,
@@ -53,9 +52,6 @@ export default async function createConfigAsync() {
                         type: ['rss', 'atom'],
                         xslt: true,
                     },
-                    // Please change this to your repo.
-                    // Remove this to remove the "edit this page" links.
-                    editUrl: 'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
                     // Useful options to enforce blogging best practices
                     onInlineTags: 'warn',
                     onInlineAuthors: 'warn',
@@ -85,22 +81,22 @@ export default async function createConfigAsync() {
                         label: 'Who am I?' ,
                         position: 'left',
                     },
-                    {
-                        to: '/portfolio',
-                        label: 'Portfolio',
-                        position: 'left',
-                    },
+                    // {
+                    //     to: '/portfolio',
+                    //     label: 'Portfolio',
+                    //     position: 'left',
+                    // },
                     {
                         type: 'docSidebar',
                         sidebarId: 'Blog',
                         position: 'left',
                         label: 'Blog',
                     },
-                    {
-                        href: '/login',
-                        label: 'Login',
-                        position: 'right',
-                    },
+                    // {
+                    //     href: '/login',
+                    //     label: 'Login',
+                    //     position: 'right',
+                    // },
                     {
                         href: 'https://github.com/SubiYoon',
                         label: 'GitHub',
@@ -108,51 +104,51 @@ export default async function createConfigAsync() {
                     },
                 ],
             },
-            footer: {
-                style: 'dark',
-                links: [
-                    {
-                        title: 'Docs',
-                        items: [
-                            {
-                                label: 'Tutorial',
-                                to: '/docs/intro',
-                            },
-                        ],
-                    },
-                    {
-                        title: 'Community',
-                        items: [
-                            {
-                                label: 'Stack Overflow',
-                                href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-                            },
-                            {
-                                label: 'Discord',
-                                href: 'https://discordapp.com/invite/docusaurus',
-                            },
-                            {
-                                label: 'X',
-                                href: 'https://x.com/docusaurus',
-                            },
-                        ],
-                    },
-                    {
-                        title: 'More',
-                        items: [
-                            {
-                                label: 'Blog',
-                                to: '/blog',
-                            },
-                            {
-                                label: 'GitHub',
-                                href: 'https://github.com/SubiYoon',
-                            },
-                        ],
-                    },
-                ],
-                copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
-            },
+            // footer: {
+            //     style: 'dark',
+            //     links: [
+            //         {
+            //             title: 'Docs',
+            //             items: [
+            //                 {
+            //                     label: 'Tutorial',
+            //                     to: '/docs/intro',
+            //                 },
+            //             ],
+            //         },
+            //         {
+            //             title: 'Community',
+            //             items: [
+            //                 {
+            //                     label: 'Stack Overflow',
+            //                     href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+            //                 },
+            //                 {
+            //                     label: 'Discord',
+            //                     href: 'https://discordapp.com/invite/docusaurus',
+            //                 },
+            //                 {
+            //                     label: 'X',
+            //                     href: 'https://x.com/docusaurus',
+            //                 },
+            //             ],
+            //         },
+            //         {
+            //             title: 'More',
+            //             items: [
+            //                 {
+            //                     label: 'Blog',
+            //                     to: '/blog',
+            //                 },
+            //                 {
+            //                     label: 'GitHub',
+            //                     href: 'https://github.com/SubiYoon',
+            //                 },
+            //             ],
+            //         },
+            //     ],
+            //     copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+            // },
             prism: {
                 theme: prismThemes.github,
                 darkTheme: prismThemes.dracula,
@@ -160,7 +156,7 @@ export default async function createConfigAsync() {
         }),
     }
 
-    await $axios.get('http://localhost:8903/ABCD').then(res => {
+    await $axios.get('http://localhost:8903/info/ABCD').then(res => {
         let result = res.data;
 
         config.title = result.memberInfo.alias;

@@ -14,6 +14,7 @@ public class MemberDto {
     private String name;
     private String role;
     private String linkPath;
+    private String notionUrl;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
 
@@ -24,5 +25,6 @@ public class MemberDto {
         this.linkPath = member.getLinkPath();
         this.createDate = member.getCreateDate();
         this.updateDate = member.getUpdateDate();
+        this.notionUrl = member.getNotionUrl();
     }
 }

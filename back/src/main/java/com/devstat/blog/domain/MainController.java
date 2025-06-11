@@ -9,11 +9,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/info")
 @RequiredArgsConstructor
 public class MainController {
 
@@ -37,5 +39,12 @@ public class MainController {
             this.memberInfo = memberInfo;
             this.menuList = menuList;
         }
+    }
+
+    @GetMapping("/{alias}/notion")
+    public ResponseEntity<String> getNotionPath(@PathVariable("alias") String alias) {
+        MemberDto member = memberService.findByAlias(alias);
+
+        return ResponseEntity.ok(member.getNotionUrl());
     }
 }

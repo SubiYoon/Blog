@@ -19,9 +19,14 @@
         "@mdx-js/react": "^3.0.0",
         "axios": "^1.9.0",
         "clsx": "^2.0.0",
+        "gray-matter": "^4.0.3",
+        "lucide-react": "^0.513.0",
         "prism-react-renderer": "^2.3.0",
         "react": "^19.0.0",
-        "react-dom": "^19.0.0"
+        "react-dom": "^19.0.0",
+        "react-markdown": "^10.1.0",
+        "rehype-highlight": "^7.0.2",
+        "rehype-raw": "^7.0.0"
     },
     "devDependencies": {
         "@docusaurus/module-type-aliases": "3.8.0",

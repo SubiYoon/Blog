@@ -3,7 +3,7 @@ blog:
     path: /Users/ABCD/blogTempFile
 
 origin:
-  url: http://localhost:8903
+  url: http://localhost:3000
 
 init:
   user:

@@ -1,0 +1,105 @@
+/* src/components/LoginForm.css */
+
+.login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: var(--ifm-background-color);
+    color: var(--ifm-font-color-base);
+    font-family: var(--ifm-font-family-base);
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.login-card {
+    background: var(--ifm-background-surface-color);
+    border: 1px solid var(--ifm-color-emphasis-200);
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.login-subtitle {
+    font-size: 0.95rem;
+    text-align: center;
+    color: var(--ifm-color-emphasis-600);
+    margin-bottom: 1.5rem;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.input-group {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    transform: translateY(-50%);
+    color: var(--ifm-color-emphasis-600);
+}
+
+.input-field {
+    width: 100%;
+    padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+    font-size: 1rem;
+    border: 1px solid var(--ifm-color-emphasis-300);
+    border-radius: 8px;
+    background: var(--ifm-background-color);
+    color: var(--ifm-font-color-base);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-field:focus {
+    border-color: var(--ifm-color-primary);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ifm-color-primary);
+}
+
+.login-button {
+    padding: 0.75rem;
+    font-size: 1rem;
+    background-color: var(--ifm-color-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.login-button:hover {
+    background-color: var(--ifm-color-primary-dark);
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: 1.25rem;
+    font-size: 0.9rem;
+    color: var(--ifm-color-emphasis-700);
+}
+
+.login-footer a {
+    color: var(--ifm-color-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
+}
