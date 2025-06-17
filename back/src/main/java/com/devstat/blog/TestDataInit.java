@@ -1,6 +1,7 @@
 package com.devstat.blog;
 
 import com.devstat.blog.core.code.RoleCode;
+import com.devstat.blog.domain.docs.entity.Docs;
 import com.devstat.blog.domain.member.entity.Member;
 import com.devstat.blog.domain.menu.entity.Menu;
 import jakarta.persistence.EntityManager;
@@ -40,8 +41,8 @@ public class TestDataInit {
                 initUserName,
                 passwordEncoder.encode(initUserPassword),
                 RoleCode.ADMIN,
-                "C:\\Users\\ulim\\iCloudDrive\\Desktop\\Work",
-                "https://abctodev.notion.site/B-E-a7b07fca67da4327b00f1448d645de59?source=copy_link"
+                "https://abctodev.notion.site/B-E-a7b07fca67da4327b00f1448d645de59?source=copy_link",
+                "https://github.com/SubiYoon/SubiYoon.github.io.git"
         );
 
         em.persist(member);
@@ -53,7 +54,13 @@ public class TestDataInit {
         em.persist(menu);
         em.flush();
 
+        Docs docs = Docs.of("/Users/ABCD/Develop/Study/velog", "Blog",findMember);
+
+        em.persist(docs);
+        em.flush();
+
         System.out.println("✅ Member 생성 완료: " + findMember.getId());
         System.out.println("✅ Menu 생성 완료: " + em.find(Menu.class, menu.getId()).getLabel());
+        System.out.println("✅ Docs 생성 완료: " + em.find(Docs.class, docs.getId()).getDirectoryPath());
     }
 }

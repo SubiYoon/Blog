@@ -1,12 +1,11 @@
-// src/components/LoginForm.tsx
-
 import React, { useState } from 'react'
 import '../css/loginForm.css';
-import { Mail, Lock } from 'lucide-react';
+import { Mail, Lock, IdCardLanyard } from 'lucide-react'
 import Layout from '@theme/Layout';
+import { $axios } from '../api'
 
 export default function LoginForm() {
-    const [email, setEmail] = useState('');
+    const [alias, setAlias] = useState('');
     const [password, setPassword] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
     const [loading, setLoading] = useState(false);
@@ -17,12 +16,9 @@ export default function LoginForm() {
         setLoading(true);
 
         try {
-            const response = await fetch('/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
+            const response = await $axios.post('http://localhost:8903/login', {
+                id: alias,
+                password: password
             });
 
             if (!response.ok) {
@@ -48,14 +44,13 @@ export default function LoginForm() {
 
                     <form className="login-form" onSubmit={handleSubmit}>
                         <div className="input-group">
-                            <Mail className="input-icon" size={20} />
+                            <IdCardLanyard className="input-icon" size={20} />
                             <input
-                                type="email"
-                                placeholder="이메일"
+                                placeholder="별칭"
                                 className="input-field"
                                 required
-                                value={email}
-                                onChange={e => setEmail(e.target.value)}
+                                value={alias}
+                                onChange={e => setAlias(e.target.value)}
                                 disabled={loading}
                             />
                         </div>

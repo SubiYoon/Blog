@@ -6,7 +6,7 @@ export default function MyReactPage() {
     const history = useHistory();
 
     useEffect(() => {
-        $axios.get(`http://localhost:8903/info/ABCD/notion`).then((response) => {
+        $axios.get(`/info/ABCD/notion`).then((response) => {
             window.open(response.data);
         })
 

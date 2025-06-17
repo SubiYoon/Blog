@@ -2,31 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { Edit, Eye, Send } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
-import matter from 'gray-matter';
 import '../../css/MarkDownEditor.css';
 
 const MarkdownEditor = () => {
     const [title, setTitle] = useState('');
     const [markdown, setMarkdown] = useState(`# 안녕하세요 👋\n\n이것은 **마크다운** 에디터입니다.`);
     const [content, setContent] = useState('');
-    const [frontMatter, setFrontMatter] = useState<Record<string, any>>({});
 
-    // markdown이 변경될 때마다 front matter 분리 및 content 갱신
+    // markdown이 변경될 때마다 content 갱신
     useEffect(() => {
-        const parsed = matter(markdown);
-        setFrontMatter(parsed.data);
-        setContent(parsed.content);
+        setContent(markdown); // gray-matter 없이 그대로 사용
     }, [markdown]);
 
     const handleSubmit = async () => {
         try {
-            // 서버에 frontMatter와 content를 같이 보내기 (필요 시)
             const response = await fetch('/api/save-markdown', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ title, frontMatter, content })
+                body: JSON.stringify({ title, content }) // frontMatter 제거
             });
 
             if (!response.ok) throw new Error('서버 오류');
@@ -68,9 +63,6 @@ const MarkdownEditor = () => {
                 <div className="editor-header">
                     <Eye size={16} />
                     <span>미리보기</span>
-                </div>
-                <div className="frontmatter-display">
-                    <pre>{JSON.stringify(frontMatter, null, 2)}</pre>
                 </div>
                 <div className="markdown-preview">
                     <ReactMarkdown rehypePlugins={[rehypeRaw]}>

@@ -2,6 +2,7 @@ package com.devstat.blog.domain.member.entity;
 
 import com.devstat.blog.core.baseEntity.BaseTimeEntity;
 import com.devstat.blog.core.code.RoleCode;
+import com.devstat.blog.domain.docs.entity.Docs;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,27 +34,30 @@ public class Member extends BaseTimeEntity implements UserDetails, Persistable<S
     @Enumerated(EnumType.STRING)
     private RoleCode role;
 
-    @Column(name = "link_path", length = 100, nullable = false)
-    private String linkPath;
-
     @Column(name = "notion_url")
     private String notionUrl;
 
-    private Member(String id, String name, String password, RoleCode role, String linkPath, String notionUrl) {
+    @Column(name = "github_url")
+    private String githubUrl;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
+    private List<Docs> docsList = new ArrayList<>();
+
+    private Member(String id, String name, String password, RoleCode role, String notionUrl, String githubUrl) {
         this.id = id;
         this.name = name;
         this.password = password;
         this.role = role;
-        this.linkPath = linkPath;
         this.notionUrl = notionUrl;
+        this.githubUrl = githubUrl;
     }
 
-    public static Member of(String id, String name, String password, String linkPath, String notionUrl) {
-        return new Member(id, name, password, RoleCode.USER, linkPath, notionUrl);
+    public static Member of(String id, String name, String password, String notionUrl, String githubUrl) {
+        return new Member(id, name, password, RoleCode.USER, notionUrl, githubUrl);
     }
 
-    public static Member of(String id, String name, String password, RoleCode role, String linkPath, String notionUrl) {
-        return new Member(id, name, password, role, linkPath, notionUrl);
+    public static Member of(String id, String name, String password, RoleCode role, String notionUrl, String githubUrl) {
+        return new Member(id, name, password, role, notionUrl, githubUrl);
     }
 
     @Override

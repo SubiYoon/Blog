@@ -1,6 +1,14 @@
 import axios from 'axios'
 
-export const $axios = axios.create({})
+// TODO: 운영에 돌릴시 주석하고 운영 전용으로 수정해야함.
+export const $axios = axios.create({
+    baseURL: 'http://localhost:8903',
+})
+
+// TODO: 로컬에 돌릴시 주석하고 로컬 전용으로 수정해야함.
+// export const $axios = axios.create({
+//     baseURL: 'https://blog.devstat.app',
+// })
 
 $axios.interceptors.request.use(
     function (config) {
