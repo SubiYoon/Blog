@@ -42,25 +42,26 @@ public class TestDataInit {
                 passwordEncoder.encode(initUserPassword),
                 RoleCode.ADMIN,
                 "https://abctodev.notion.site/B-E-a7b07fca67da4327b00f1448d645de59?source=copy_link",
-                "https://github.com/SubiYoon/SubiYoon.github.io.git"
-        );
+                "https://github.com/SubiYoon/SubiYoon.github.io.git",
+                "/Users/ABCD/blogTempFile/ABCD/",
+                "/Language/SOLID 원칙");
 
         em.persist(member);
         em.flush();
 
         Member findMember = em.find(Member.class, initUserAlias);
 
-        Menu menu = Menu.of(findMember,  "PortFolio", "/portfolio", "Portfolio");
+        Menu menu = Menu.of(findMember, "PortFolio", "/portfolio", "Portfolio");
         em.persist(menu);
         em.flush();
 
-        Docs docs = Docs.of("/Users/ABCD/Develop/Study/velog", "Blog",findMember);
+        Docs docs1 = Docs.of("Study", ".", findMember);
 
-        em.persist(docs);
+        em.persist(docs1);
         em.flush();
 
         System.out.println("✅ Member 생성 완료: " + findMember.getId());
         System.out.println("✅ Menu 생성 완료: " + em.find(Menu.class, menu.getId()).getLabel());
-        System.out.println("✅ Docs 생성 완료: " + em.find(Docs.class, docs.getId()).getDirectoryPath());
+        System.out.println("✅ Docs 생성 완료: " + em.find(Docs.class, docs1.getId()).getId());
     }
 }

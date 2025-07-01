@@ -3,8 +3,8 @@ import Layout from '@theme/Layout';
 
 export default function MarkDown() {
     return (
-        <Layout>
-            <MarkdownEditor/>
+        <Layout title="MarkDown Editor">
+            <MarkdownEditor />
         </Layout>
     )
 }

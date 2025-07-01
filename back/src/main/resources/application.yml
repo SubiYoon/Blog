@@ -40,4 +40,4 @@ logging:
     # ??? ?? Exception ??
     devstat.blog: debug
 
-jwtSecretKey: /dmaD89iAo2bFpDLHgX7pHe/AsTS/JpwW0QANm/Q7g3oL1a2303WlqGXwA0d2xlY
+jwtSecretKey: ENC(/dmaD89iAo2bFpDLHgX7pHe/AsTS/JpwW0QANm/Q7g3oL1a2303WlqGXwA0d2xlY)

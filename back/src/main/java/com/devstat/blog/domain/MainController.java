@@ -1,5 +1,7 @@
 package com.devstat.blog.domain;
 
+import com.devstat.blog.domain.docs.dto.DocsDto;
+import com.devstat.blog.domain.docs.service.DocsService;
 import com.devstat.blog.domain.member.dto.MemberDto;
 import com.devstat.blog.domain.member.service.MemberService;
 import com.devstat.blog.domain.menu.dto.MenuDto;
@@ -21,6 +23,7 @@ public class MainController {
 
     private final MemberService memberService;
     private final MenuService menuService;
+    private final DocsService docsService;
 
     @GetMapping("/{alias}")
     public ResponseEntity<MainDataDto> getMainDocs(@PathVariable("alias") String alias) {
@@ -47,4 +50,10 @@ public class MainController {
 
         return ResponseEntity.ok(member.getNotionUrl());
     }
+
+    @GetMapping("/{alias}/docs")
+    public ResponseEntity<List<DocsDto>> getDocsList(@PathVariable("alias") String alias) {
+        return ResponseEntity.ok(docsService.getDocsList(alias));
+    }
+
 }

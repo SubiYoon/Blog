@@ -1,46 +1,53 @@
-import React, { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useHistory } from '@docusaurus/router';
 import '../css/loginForm.css';
-import { Mail, Lock, IdCardLanyard } from 'lucide-react'
+import { Lock, IdCardLanyard } from 'lucide-react'
 import Layout from '@theme/Layout';
 import { $axios } from '../api'
 
 export default function LoginForm() {
+    const history = useHistory();
+    const [id, setId] = useState('');
     const [alias, setAlias] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMsg, setErrorMsg] = useState('');
+    const [msg, setMsg] = useState('');
+    const [messageColor, setMessageColor] = useState('red');
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrorMsg('');
+        setMsg('');
         setLoading(true);
 
-        try {
-            const response = await $axios.post('http://localhost:8903/login', {
-                id: alias,
-                password: password
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                setErrorMsg(errorData.message || '로그인 실패');
-            } else {
-                alert('로그인 성공!');
-                // 예: window.location.href = '/dashboard';
-            }
-        } catch {
-            setErrorMsg('서버 요청 실패');
-        } finally {
-            setLoading(false);
-        }
+        await $axios.post('/login', {
+            id: alias,
+            password: password
+        }, {
+            withCredentials: true // ✅ 쿠키 저장을 위한 필수 설정
+        }).then((response) => {
+            setMessageColor('green')
+            setMsg("로그인에 성공했습니다.")
+            localStorage.setItem('DEVSTAT-JWT', 'temp-token');
+            history.push('/');
+        }).catch((error) => {
+            setMessageColor('red')
+            setMsg("로그인에 실패했습니다.")
+            console.log(error);
+        });
     };
+
+    useEffect(() => {
+        $axios.get('/info/ABCD').then((response) => {
+            setId(response.data.memberInfo.alias);
+        })
+    }, [id]);
 
     return (
         <Layout title="로그인">
             <div className="login-wrapper">
                 <div className="login-card">
                     <h1 className="login-title">로그인</h1>
-                    <p className="login-subtitle">Docusaurus에 오신 것을 환영합니다 🚀</p>
+                    <p className="login-subtitle">{id}&apos;s Docusaurus에 오신 것을 환영합니다 🚀</p>
 
                     <form className="login-form" onSubmit={handleSubmit}>
                         <div className="input-group">
@@ -68,7 +75,7 @@ export default function LoginForm() {
                             />
                         </div>
 
-                        {errorMsg && <p style={{ color: 'red', marginBottom: '1rem' }}>{errorMsg}</p>}
+                        {msg && <p style={{ color: messageColor, marginBottom: '1rem' }}>{msg}</p>}
 
                         <button type="submit" className="login-button" disabled={loading}>
                             {loading ? '로그인 중...' : '로그인'}

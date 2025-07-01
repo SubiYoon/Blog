@@ -43,21 +43,32 @@ public class Member extends BaseTimeEntity implements UserDetails, Persistable<S
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
     private List<Docs> docsList = new ArrayList<>();
 
-    private Member(String id, String name, String password, RoleCode role, String notionUrl, String githubUrl) {
+    @Column(name = "directory_path", nullable = false)
+    private String directoryPath;
+
+    @Column(name = "blog_init_path", nullable = false)
+    private String blogInitPath;
+
+    private Member(String id, String name, String password, RoleCode role, String notionUrl, String githubUrl,
+            String directoryPath, String blogInitPath) {
         this.id = id;
         this.name = name;
         this.password = password;
         this.role = role;
         this.notionUrl = notionUrl;
         this.githubUrl = githubUrl;
+        this.directoryPath = directoryPath;
+        this.blogInitPath = blogInitPath;
     }
 
-    public static Member of(String id, String name, String password, String notionUrl, String githubUrl) {
-        return new Member(id, name, password, RoleCode.USER, notionUrl, githubUrl);
+    public static Member of(String id, String name, String password, String notionUrl, String githubUrl,
+            String directoryPath, String blogInitPath) {
+        return new Member(id, name, password, RoleCode.USER, notionUrl, githubUrl, directoryPath, blogInitPath);
     }
 
-    public static Member of(String id, String name, String password, RoleCode role, String notionUrl, String githubUrl) {
-        return new Member(id, name, password, role, notionUrl, githubUrl);
+    public static Member of(String id, String name, String password, RoleCode role, String notionUrl, String githubUrl,
+            String directoryPath, String blogInitPath) {
+        return new Member(id, name, password, role, notionUrl, githubUrl, directoryPath, blogInitPath);
     }
 
     @Override

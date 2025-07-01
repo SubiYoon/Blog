@@ -10,6 +10,7 @@ public enum StatusCode {
      */
     SUCCESS(HttpStatus.OK, "SUCCESS", "성공"),
     PAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "PAGE_NOT_FOUND", "페이지를 찾을 수 없습니다."),
+    DOCS_RESTART_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "DOCS_RESTART_FAIL", "DOCUSAURUS를 재실행하는데 실패했습니다."),
 
     /**
      * 회원

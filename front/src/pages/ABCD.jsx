@@ -1,6 +1,11 @@
-import { $axios } from '../api'
+import { $axios } from '/src/api'
 import { useEffect } from 'react';
 import { useHistory } from '@docusaurus/router';
+
+async function loadDocsOwnerInfo() {
+    const response = await $axios.get('/info/ABCD');
+    return response.data.memberInfo;       // memberInfo 반환
+}
 
 export default function MyReactPage() {
     const history = useHistory();
@@ -10,7 +15,12 @@ export default function MyReactPage() {
             window.open(response.data);
         })
 
-        history.push('/Browser/Cross%20Origin%20Resource%20Sharing');
+        async function fetchMemberInfo() {
+            const data = await loadDocsOwnerInfo();
+            history.push(data.blogInitPath);
+        }
+
+        fetchMemberInfo();
     }, [history]);
 
     return null;

@@ -5,9 +5,13 @@ import lombok.Data;
 
 @Data
 public class DocsDto {
-    private String directoryPath;
+    private long id;
+    private String sidebarId;
+    private String targetFolder;
 
     public DocsDto(Docs docs) {
-        this.directoryPath = docs.getDirectoryPath();
+        this.id = docs.getId();
+        this.sidebarId = docs.getSidebarId();
+        this.targetFolder = docs.getTargetFolder();
     }
 }

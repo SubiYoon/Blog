@@ -63,12 +63,12 @@ export default async function createConfigAsync() {
         ],
 
         themeConfig:
-        /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+            /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
             ({
                 // Replace with your project's social card
                 image: 'img/docusaurus-social-card.jpg',
                 navbar: {
-                    title: 'ABCD',
+                    title: 'Docusaurus',
                     logo: {
                         alt: 'My Site Logo',
                         src: 'img/logo.svg',
@@ -76,25 +76,13 @@ export default async function createConfigAsync() {
                     items: [
                         {
                             to: '/ABCD',
-                            label: 'Who am I?' ,
+                            label: 'Who am I?',
                             position: 'left',
                         },
-                        // {
-                        //     to: '/portfolio',
-                        //     label: 'Portfolio',
-                        //     position: 'left',
-                        // },
                         {
-                            type: 'docSidebar',
-                            sidebarId: 'Blog',
+                            to: '/portfolio',
+                            label: 'Portfolio',
                             position: 'left',
-                            label: 'Blog',
-                        },
-                        {
-                            type: 'docSidebar',
-                            sidebarId: 'OS',
-                            position: 'left',
-                            label: 'OS',
                         },
                         // {
                         //     href: '/login',
@@ -156,6 +144,7 @@ export default async function createConfigAsync() {
                 prism: {
                     theme: prismThemes.github,
                     darkTheme: prismThemes.dracula,
+                    additionalLanguages: ['java', 'bash', 'python'],
                 },
             }),
     }
@@ -163,12 +152,24 @@ export default async function createConfigAsync() {
     await $axios.get(process.env.API_SERVER + '/info/ABCD').then(res => {
         const result = res.data;
 
-        config.themeConfig.navbar.title = result.memberInfo.alias;
-        for (let i = 0; i < result.memberInfo.docsList.length; i++) {
-            config.presets[i][1]['docs'].path = result.memberInfo.docsList[i].directoryPath;
-        }
+        config.title = result.memberInfo.alias; // Tab Title Setting
+        config.themeConfig.navbar.title = result.memberInfo.alias; // Header MainPageText Title
+        config.presets[0][1]['docs'].path = result.memberInfo.directoryPath; // Docs 위치 바인딩
+    })
 
-        console.log(res.data);
+    await $axios.get(process.env.API_SERVER + '/info/ABCD/docs').then(res => {
+        const docsInfo = res.data;
+
+        docsInfo.forEach(doc => {
+            config.themeConfig.navbar.items.push(
+                {
+                    type: 'docSidebar',
+                    sidebarId: doc.sidebarId,
+                    position: 'left',
+                    label: doc.sidebarId,
+                },
+            );
+        })
     })
 
     return config

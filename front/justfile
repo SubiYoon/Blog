@@ -1,0 +1,15 @@
+#!/usr/bin/env -S just --justfile
+# just reference  : https://just.systems/man/en/
+
+@dev:
+    npm run dev
+
+@stop port:
+	echo "🔍 포트 {{port}} 점유 프로세스를 검색 중..." && \
+	lsof -t -i :{{port}} | tee /tmp/pids.txt | grep -q . && \
+	( pids=$(cat /tmp/pids.txt) && \
+	echo "🔪 프로세스 종료 중: $pids" && \
+	kill -9 $pids && \
+	echo "✅ 포트 {{port}}를 사용하는 프로세스를 종료했습니다." ) || \
+	( echo "ℹ️ 포트 {{port}}를 사용하는 프로세스가 없습니다." ) && \
+	rm -f /tmp/pids.txt

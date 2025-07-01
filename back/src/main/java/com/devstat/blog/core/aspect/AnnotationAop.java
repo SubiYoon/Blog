@@ -4,6 +4,8 @@ import com.devstat.blog.core.code.RoleCode;
 import com.devstat.blog.core.code.StatusCode;
 import com.devstat.blog.core.exception.IsNotAdminUserException;
 import com.devstat.blog.domain.member.entity.Member;
+import com.devstat.blog.utility.NpmUtils;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -12,10 +14,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Aspect
@@ -63,4 +61,13 @@ public class AnnotationAop {
         return joinPoint.proceed();
     }
 
+    @Around("@annotation(com.devstat.blog.core.annotation.restartDocs)")
+    public Object restartDocs(ProceedingJoinPoint joinPoint) throws Throwable {
+
+        log.info("Docs 재시작");
+
+        NpmUtils.docsRestart();
+
+        return joinPoint.proceed();
+    }
 }

@@ -21,7 +21,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
     private String blogFilePath;
 
     @Bean
-    public AuditorAware<String> auditorProvider() {
+    AuditorAware<String> auditorProvider() {
         // null값 허용
         return new AuditorAware<String>() {
             @Override
@@ -29,8 +29,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
                 return Optional.ofNullable(
                         SecurityContextHolder.getContext().getAuthentication() != null
                                 ? SecurityContextHolder.getContext().getAuthentication().getName()
-                                : null
-                );
+                                : null);
             }
         };
     }

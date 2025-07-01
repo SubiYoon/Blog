@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import remarkGfm from 'remark-gfm';
 import { Edit, Eye, Send } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
@@ -65,7 +66,7 @@ const MarkdownEditor = () => {
                     <span>미리보기</span>
                 </div>
                 <div className="markdown-preview">
-                    <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                         {content}
                     </ReactMarkdown>
                 </div>

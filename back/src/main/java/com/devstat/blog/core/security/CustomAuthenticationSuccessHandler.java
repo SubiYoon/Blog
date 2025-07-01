@@ -26,7 +26,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     @SneakyThrows
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+            Authentication authentication) {
         Member member = (Member) authentication.getPrincipal();
         MemberDto memberDto = new MemberDto(member);
 

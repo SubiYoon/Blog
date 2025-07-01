@@ -8,41 +8,36 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.domain.Persistable;
 
 @Entity
 @Getter
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Docs extends BaseEntity implements Persistable<String> {
+public class Docs extends BaseEntity {
 
     @Id
-    @Column(nullable = false, name = "directory_path")
-    private String directoryPath;
+    @Column(name = "docs_id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "docs_seq_generator")
+    @SequenceGenerator(name = "docs_seq_generator", sequenceName = "docs_seq", allocationSize = 1)
+    private Long id;
 
     @Column(nullable = false, name = "sidebar_id")
     private String sidebarId;
+
+    @Column(nullable = false, name = "target_folder")
+    private String targetFolder;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_alias", nullable = false)
     private Member member;
 
-    public static Docs of(String path, String sidebarId, Member findMember) {
+    public static Docs of(String sidebarId, String targetFolder, Member findMember) {
         Docs docs = new Docs();
-        docs.directoryPath = path;
         docs.sidebarId = sidebarId;
+        docs.targetFolder = targetFolder;
         docs.member = findMember;
         return docs;
     }
 
-    @Override
-    public String getId() {
-        return directoryPath;
-    }
-
-    @Override
-    public boolean isNew() {
-        return createDate == null;
-    }
 }
