@@ -2,7 +2,8 @@ package com.devstat.blog.domain.member.entity;
 
 import com.devstat.blog.core.baseEntity.BaseTimeEntity;
 import com.devstat.blog.core.code.RoleCode;
-import com.devstat.blog.domain.docs.entity.Docs;
+import com.devstat.blog.domain.menu.entity.Menu;
+
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -41,7 +42,7 @@ public class Member extends BaseTimeEntity implements UserDetails, Persistable<S
     private String githubUrl;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
-    private List<Docs> docsList = new ArrayList<>();
+    private List<Menu> menuList = new ArrayList<>();
 
     @Column(name = "directory_path", nullable = false)
     private String directoryPath;

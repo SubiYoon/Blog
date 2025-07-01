@@ -152,9 +152,9 @@ export default async function createConfigAsync() {
     await $axios.get(process.env.API_SERVER + '/info/ABCD').then(res => {
         const result = res.data;
 
-        config.title = result.memberInfo.alias; // Tab Title Setting
-        config.themeConfig.navbar.title = result.memberInfo.alias; // Header MainPageText Title
-        config.presets[0][1]['docs'].path = result.memberInfo.directoryPath; // Docs 위치 바인딩
+        config.title = result.alias; // Tab Title Setting
+        config.themeConfig.navbar.title = result.alias; // Header MainPageText Title
+        config.presets[0][1]['docs'].path = result.directoryPath; // Docs 위치 바인딩
     })
 
     await $axios.get(process.env.API_SERVER + '/info/ABCD/docs').then(res => {

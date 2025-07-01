@@ -1,27 +1,22 @@
 import { $axios } from '/src/api'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from '@docusaurus/router';
-
-async function loadDocsOwnerInfo() {
-    const response = await $axios.get('/info/ABCD');
-    return response.data.memberInfo;       // memberInfo 반환
-}
 
 export default function MyReactPage() {
     const history = useHistory();
+    const [initPath, setInitPath] = useState();
 
     useEffect(() => {
         $axios.get(`/info/ABCD/notion`).then((response) => {
             window.open(response.data);
         })
 
-        async function fetchMemberInfo() {
-            const data = await loadDocsOwnerInfo();
-            history.push(data.blogInitPath);
-        }
+        $axios.get(`/info/ABCD`).then((response) => {
+            setInitPath(response.data.blogInitPath);
+        })
 
-        fetchMemberInfo();
-    }, [history]);
+        history.push(initPath);
+    }, [initPath]);
 
     return null;
 }

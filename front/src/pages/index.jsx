@@ -13,7 +13,7 @@ export default function HomeRedirect() {
             setInitPath('/MarkDown')
         } else {
             $axios.get(`/info/ABCD`).then((response) => {
-                setInitPath(response.data.memberInfo.blogInitPath);
+                setInitPath(response.data.blogInitPath);
             })
         }
         history.push(initPath);

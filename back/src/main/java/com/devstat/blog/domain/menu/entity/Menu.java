@@ -2,6 +2,7 @@ package com.devstat.blog.domain.menu.entity;
 
 import com.devstat.blog.core.baseEntity.BaseEntity;
 import com.devstat.blog.domain.member.entity.Member;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,34 +21,23 @@ public class Menu extends BaseEntity {
     @SequenceGenerator(name = "menu_seq_generator", sequenceName = "menu_seq", allocationSize = 1)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "member_alias")
+    @Column(nullable = false, name = "sidebar_id")
+    private String sidebarId;
+
+    @Column(nullable = false, name = "target_folder")
+    private String targetFolder;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_alias", nullable = false)
     private Member member;
 
-    @Column(length = 10, nullable = false)
-    private String label;
-
-    @Column(name = "page_path", nullable = false)
-    private String pagePath;
-
-    private String description;
-
-    @Column(name = "is_use", nullable = false)
-    private Character isUse;
-
-    private Menu(Member member, String label, String pagePath, String description) {
-        this.member = member;
-        this.label = label;
-        this.pagePath = pagePath;
-        this.description = description;
-        this.isUse = 'Y';
+    public static Menu of(String sidebarId, String targetFolder, Member findMember) {
+        Menu menu = new Menu();
+        menu.sidebarId = sidebarId;
+        menu.targetFolder = targetFolder;
+        menu.member = findMember;
+        return menu;
     }
 
-    public static Menu of(Member member, String label, String pagePath, String description) {
-        return new Menu(member, label, pagePath, description);
-    }
-
-    public void changeUse(Character isUse) {
-        this.isUse = isUse;
-    }
 }
