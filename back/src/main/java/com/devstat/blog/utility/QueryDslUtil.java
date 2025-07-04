@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class QueryDslUtils {
+public class QueryDslUtil {
 
     public static OrderSpecifier<?>[] getAllOrderSpecifiers(Pageable pageable, EntityPathBase entityType) {
         List<OrderSpecifier<?>> orders = new ArrayList<>();

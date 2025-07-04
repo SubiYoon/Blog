@@ -1,10 +1,15 @@
 package com.devstat.blog.domain.doc.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.time.LocalDateTime;
 
-@Getter
-@Setter
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
 public class DocDto {
 
+    private String title;
+    private String content;
+    private LocalDateTime updateAt;
 }

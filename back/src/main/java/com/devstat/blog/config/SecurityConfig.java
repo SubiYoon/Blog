@@ -110,7 +110,7 @@ public class SecurityConfig {
         config.setAllowedHeaders(
                 Arrays.asList("Content-Type", "Authorization", "Content-Length", "X-Requested-Width", "X-XSRF-token"));
         // 요청시 가능한 Method 서정
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

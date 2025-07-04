@@ -3,14 +3,19 @@ package com.devstat.blog.core.code;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Getter
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum StatusCode {
     /**
      * 공통코드
      */
     SUCCESS(HttpStatus.OK, "SUCCESS", "성공"),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER_NOT_FOUND", "회원을 찾을 수 없습니다."),
     PAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "PAGE_NOT_FOUND", "페이지를 찾을 수 없습니다."),
     DOCS_RESTART_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "DOCS_RESTART_FAIL", "DOCUSAURUS를 재실행하는데 실패했습니다."),
+    GIT_TASK_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "GIT_TASK_FAIL", "GIT 테스크를 실행하는데 실패했습니다."),
 
     /**
      * 회원
@@ -22,20 +27,23 @@ public enum StatusCode {
     IS_NOT_ADMIN_USER(HttpStatus.FORBIDDEN, "IS_NOT_ADMIN_USER", "관리자 회원이 시도한 요청이 아닙니다."),
 
     /**
-     * Menu
+     * Doc
      */
-    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "MENU_NOT_FOUND", "해당 메뉴를 찾을 수 없습니다.");
+    DOC_SELECT_FAIL(HttpStatus.NOT_FOUND, "DOC_SELECT_FAIL", "해당 문서를 찾을 수 없습니다."),
+    INCLUDE_NOT_FILE_AND_FOLDER(HttpStatus.BAD_REQUEST, "INCLUDE_NOT_FILE_AND_FOLDER", "필터에는 파일과 폴더만 사용할 수 있습니다."),
+    DOC_SAVE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "DOC_SAVE_FAIL", "문서 저장에 실패했습니다."),
+    DOC_DELETE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "DOC_DELETE_FAIL", "문서 삭제에 실패했습니다."),;
 
     /**
      * 커스텀해서 사용할 변수들
      */
     private final HttpStatus statusCode;
     private final String customCode;
-    private final String massage;
+    private final String message;
 
-    private StatusCode(HttpStatus statusCode, String customCode, String massage) {
+    private StatusCode(HttpStatus statusCode, String customCode, String message) {
         this.statusCode = statusCode;
         this.customCode = customCode;
-        this.massage = massage;
+        this.message = message;
     }
 }

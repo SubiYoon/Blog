@@ -2,7 +2,7 @@
 # just reference  : https://just.systems/man/en/
 
 @dev:
-    npm run dev
+    npm --inspect-brk run dev
 
 @stop port:
 	echo "🔍 포트 {{port}} 점유 프로세스를 검색 중..." && \

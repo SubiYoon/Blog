@@ -1,0 +1,26 @@
+/* ContextMenu.css */
+.context-menu {
+    position: absolute;
+    z-index: 9999;
+    background-color: var(--ifm-background-color);
+    border: 1px solid var(--ifm-toc-border-color, #ccc);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    padding: 4px 0;
+    border-radius: 6px;
+    width: 160px;
+    font-size: 14px;
+}
+
+.context-menu>div {
+    padding: 8px 16px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.context-menu>div:hover {
+    background-color: var(--ifm-hover-overlay);
+}
+
+.context-menu .delete {
+    color: var(--ifm-color-danger, #d32f2f);
+}

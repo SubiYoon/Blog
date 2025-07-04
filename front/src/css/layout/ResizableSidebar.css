@@ -1,0 +1,24 @@
+.resizable-sidebar {
+    display: flex;
+    flex-direction: row;
+    height: calc(100% - 17px);
+    position: relative;
+    background-color: var(--ifm-background-surface);
+    border-right: 1px solid var(--ifm-toc-border-color, #ddd);
+}
+
+.resizable-content {
+    flex: 1;
+    overflow: auto;
+}
+
+.resizer {
+    width: 5px;
+    cursor: col-resize;
+    background-color: transparent;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+}

@@ -1,7 +1,21 @@
 .editor-container {
     display: flex;
+    height: calc(100vh - var(--ifm-navbar-height, 60px));
+    /* 헤더 제외한 높이 */
     height: 100vh;
     font-family: sans-serif;
+}
+
+.docs-tree-sidebar {
+    flex: 0 0 280px;
+    /* 고정 사이드바 */
+}
+
+.markdown-editor-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
 }
 
 .editor-pane,
@@ -20,6 +34,15 @@
     gap: 6px;
 }
 
+.editor-header-center {
+    display: flex;
+    align-content: center;
+    margin: auto;
+    font-weight: bold;
+    margin-bottom: 10px;
+    gap: 6px;
+}
+
 .title-input {
     width: 100%;
     margin-bottom: 10px;
@@ -32,7 +55,8 @@
 
 .editor-textarea {
     width: 100%;
-    height: 60%;
+    height: calc(100% - 75px);
+    min-width: 650px;
     resize: none;
     border: 1px solid var(--ifm-color-emphasis-300, #ccc);
     padding: 10px;
@@ -41,6 +65,10 @@
     background-color: var(--ifm-background-color);
     color: var(--ifm-font-color-base);
     margin-bottom: 10px;
+}
+
+.submit-button-wrapper {
+    margin-left: auto;
 }
 
 .submit-button {
@@ -53,6 +81,9 @@
     align-items: center;
     cursor: pointer;
     transition: background 0.2s;
+    float: right;
+    margin-left: 10px;
+    ;
 }
 
 .submit-button:hover {
@@ -61,7 +92,12 @@
 
 .markdown-preview {
     height: calc(100% - 30px);
+    width: 720px;
+    /* 고정 너비 */
+    max-width: 100%;
+    /* 작은 화면 대응 */
     overflow-y: auto;
+    margin: auto;
     padding: 10px;
     border: 1px solid var(--ifm-color-emphasis-300, #ccc);
     background-color: var(--ifm-background-color);

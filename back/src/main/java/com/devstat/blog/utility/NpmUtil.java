@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class NpmUtils {
+public class NpmUtil {
 
     private static final int TARGET_PORT = 3000;
     @Value("${blog.file.path}")
