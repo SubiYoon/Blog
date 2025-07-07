@@ -223,10 +223,13 @@ export default function portfolioForm() {
         <Layout title="포트폴리오">
             <main className="wrap">
                 <section className="menu-top">
-                    문서편집, 포토폴리오 편집 > 로그아웃
-                    <button>문서편집</button>
-                    <button>포토폴리오 편집</button>
-                    <button>로그아웃</button>
+                    <div className="navbar-inner">
+                        <a>문서편집</a>
+                        <a>포토폴리오 편집</a>
+                        <div className="logout-box">
+                            <a>로그아웃</a>
+                        </div>
+                    </div>
                 </section>
                 <section className="menu-section">
                     <div className="menu-box">

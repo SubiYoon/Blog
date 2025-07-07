@@ -10,9 +10,29 @@
         position: absolute;
         top: -60px;
         z-index: 1000;
-        right: 10%;
+        right: 12%;
         width: 40%;
         height: 60px;
+
+        .navbar-inner{
+            display: flex;
+            height: 100%;
+            gap: 30px;
+            align-items: center;
+            a {
+                cursor: pointer;
+                color: var(--ifm-navbar-link-color);
+                font-weight: var(--ifm-font-weight-semibold);
+
+                &:hover {
+                    color: var(--ifm-navbar-link-hover-color);
+                }
+            }
+
+            .logout-box {
+                margin-left: auto;
+            }
+        }
     }
 
     .menu-section {
