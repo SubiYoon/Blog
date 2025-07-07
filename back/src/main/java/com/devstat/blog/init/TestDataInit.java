@@ -1,7 +1,6 @@
-package com.devstat.blog;
+package com.devstat.blog.init;
 
 import com.devstat.blog.core.code.RoleCode;
-import com.devstat.blog.domain.doc.entity.Doc;
 import com.devstat.blog.domain.member.entity.Member;
 import com.devstat.blog.domain.menu.entity.Menu;
 
@@ -52,10 +51,6 @@ public class TestDataInit {
 
         Member findMember = em.find(Member.class, initUserAlias);
 
-        // Doc doc = Doc.of();
-        // em.persist(doc);
-        // em.flush();
-
         Menu menu1 = Menu.of("Study", "velog", findMember);
         Menu menu2 = Menu.of("test", "test", findMember);
 
@@ -66,6 +61,6 @@ public class TestDataInit {
         System.out.println("✅ Member 생성 완료: " + findMember.getId());
         // System.out.println("✅ Menu 생성 완료: " + em.find(Doc.class,
         // menu.getId()).getLabel());
-        System.out.println("✅ Docs 생성 완료: " + em.find(Menu.class, menu1.getId()).getId());
+        System.out.println("✅ Menu 생성 완료: " + em.find(Menu.class, menu1.getId()).getId());
     }
 }

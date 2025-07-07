@@ -22,8 +22,6 @@ export default function LoginForm() {
         await $axios.post('/login', {
             id: alias,
             password: password
-        }, {
-            withCredentials: true // ✅ 쿠키 저장을 위한 필수 설정
         }).then((response) => {
             setMessageColor('green')
             setMsg("로그인에 성공했습니다.")
@@ -38,7 +36,7 @@ export default function LoginForm() {
 
     useEffect(() => {
         $axios.get('/info/ABCD').then((response) => {
-            setId(response.data.memberInfo.alias);
+            setId(response.data.alias);
         })
     }, [id]);
 

@@ -23,6 +23,7 @@
         "clsx": "^2.0.0",
         "dotenv": "^16.5.0",
         "gray-matter": "^4.0.3",
+        "highlight.js": "^11.11.1",
         "lucide-react": "^0.513.0",
         "prism-react-renderer": "^2.3.0",
         "react": "^19.0.0",
@@ -31,6 +32,8 @@
         "rehype-highlight": "^7.0.2",
         "rehype-raw": "^7.0.0",
         "remark-gfm": "^4.0.1",
+        "sweetalert2": "^11.22.2",
+        "sync-request": "^6.1.0"
         "sync-request": "^6.1.0",
         "yet-another-react-lightbox": "^3.23.3"
     },

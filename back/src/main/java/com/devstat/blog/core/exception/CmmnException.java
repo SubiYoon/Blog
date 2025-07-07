@@ -11,16 +11,18 @@ public class CmmnException extends RuntimeException {
      * stackTrace가 필요 없는 경우
      */
     public CmmnException(StatusCode statusCode) {
-        super(statusCode.getMassage());
-        this.exceptionVo = new ExceptionVo(statusCode.getStatusCode(), statusCode.getCustomCode(), statusCode.getMassage());
+        super(statusCode.getMessage());
+        this.exceptionVo = new ExceptionVo(statusCode.getStatusCode(), statusCode.getCustomCode(),
+                statusCode.getMessage());
     }
 
     /**
      * stackTrace가 필요 한 경우
      */
     public CmmnException(StatusCode statusCode, Throwable e) {
-        super(statusCode.getMassage(), e);
+        super(statusCode.getMessage(), e);
         e.printStackTrace();
-        this.exceptionVo = new ExceptionVo(statusCode.getStatusCode(), statusCode.getCustomCode(), statusCode.getMassage());
+        this.exceptionVo = new ExceptionVo(statusCode.getStatusCode(), statusCode.getCustomCode(),
+                statusCode.getMessage());
     }
 }
