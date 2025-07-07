@@ -65,8 +65,8 @@ export async function $prompt(title, html, inputType, placeholder) {
  * @param html html태그로된 내용
  * @param icon 아이콘 (success, error, warning, info, question)
  */
-export function $alert(title, html, icon) {
-    Swal.fire({
+export async function $alert(title, html, icon) {
+    await Swal.fire({
         title: title,
         html: html,
         icon: icon || 'success'

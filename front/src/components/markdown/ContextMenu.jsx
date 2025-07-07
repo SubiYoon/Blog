@@ -27,7 +27,9 @@ const ContextMenu = ({
 
     return (
         <div className="context-menu" style={{ top: y, left: x }} onContextMenu={(e) => e.preventDefault()}>
-            <div onClick={(e) => handleClick(e, onAddFile)}>📄 파일 추가</div>
+            {node?.filePath !== '/' && (
+                <div onClick={(e) => handleClick(e, onAddFile)}>📄 파일 추가</div>
+            )}
             <div onClick={(e) => handleClick(e, onAddFolder)}>📁 폴더 추가</div>
             {node?.type === 'folder' && node?.filePath !== '/' && (
                 <div onClick={(e) => handleClick(e, onRename)}>✏️ 이름 변경</div>

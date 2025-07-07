@@ -39,8 +39,15 @@ const DocsTreeSidebar = ({ treeData, setTreeData, onSelectFile }) => {
         const newFullPath = parentPath === '/' ? `/${title}` : `${parentPath}/${title}`;
         const newNodeType = type === 'file' ? 'md' : 'folder';
 
-        if (type === 'file') {
+        const titleArr = title.split('.');
+
+        if (type === 'file' && titleArr.length < 2) {
             $alert('파일은 확장자를 입력해야 합니다.', '가능한 확장자 .json, .js, .md, .ts', 'error');
+            return
+        }
+
+        if (type === 'file' && !titleArr[1].includes('md', 'js', 'ts*', 'json')) {
+            $alert('사용할 수 없는 확장자입니다.', '가능한 확장자 .json, .js, .md, .ts', 'error');
             return
         }
 
@@ -108,12 +115,12 @@ const DocsTreeSidebar = ({ treeData, setTreeData, onSelectFile }) => {
     };
 
     const handleDelete = async (node) => {
-        await $confirm(`${node.title}를 제거 하시겠습니까?`, '삭제는 즉시 반영되며 되돌릴 수 없습니다.', 'question', '제거', '취소')
+        await $confirm(`${node.title}를 제거 하시겠습니까?`, '작성중인 파일은 소멸됩니다.<br> 삭제는 즉시 반영되며 되돌릴 수 없습니다.', 'question', '제거', '취소')
             .then((response) => {
                 if (response) {
-                    $axios.delete('/doc', { params: node.type === 'folder' ? { filePath: node.filePath } : node }).then(response => {
+                    $axios.delete('/doc', { params: node.type === 'folder' ? { filePath: node.filePath } : node }).then(async response => {
                         if (response.data.customCode === 'SUCCESS') {
-                            $alert('제거 성공!', '', 'success');
+                            await $alert('제거 성공!', '', 'success');
                         } else {
                             $alert('제거 실패!', `서버 관리자에게 문의 하세요.`, 'error');
                         }

@@ -1,7 +1,7 @@
 import Layout from '@theme/Layout'
 import '../css/portfolio.css';
 import PortfolioMenu from "../components/PortfolioMenu";
-import {useState} from "react";
+import { useState } from "react";
 import PortfolioProject from "../components/PortfolioProject";
 
 export default function portfolioForm() {
@@ -19,7 +19,7 @@ export default function portfolioForm() {
                     date: '2025-06-10 ~ 2025-06-20',
                     items: [
                         {
-                            id:1,
+                            id: 1,
                             title: '카카오 페이',
                             cont: '기존 카카오페이의 결제 시스템을 React 기반으로 전면 리팩토링하였고, ' +
                                 '결제 처리 속도를 20% 이상 개선하였습니다. Spring Boot 기반 백엔드와 연동하여 ' +
@@ -38,29 +38,29 @@ export default function portfolioForm() {
                                 '모바일 UI/UX를 최적화하였고, 사용자 피드백 기반으로 UI 반응 속도를 개선하였습니다. ' +
                                 '또한, 보안 강화를 위해 클라이언트 측 암호화 모듈을 적용했습니다.',
                             imgs: [
-                                {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
+                                { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
                             ]
                         },
                         {
-                            id:3,
+                            id: 3,
                             title: '데이터 시각화',
                             cont: '데이터 시각화 대시보드 개발: D3.js와 Chart.js를 적용해 관리자의 KPI 모니터링 정확도를 90% 이상 도달.',
                             imgs: [
-                                {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
+                                { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
                             ]
                         },
                         {
-                            id:4,
+                            id: 4,
                             title: '대시보드 개발',
                             cont: '데이터 시각화 대시보드 개발: D3.js와 Chart.js를 적용해 관리자의 KPI 모니터링 정확도를 90% 이상 도달.',
                             imgs: [
-                                {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
+                                { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
                             ]
                         },
                     ],
@@ -71,73 +71,73 @@ export default function portfolioForm() {
                     date: '2025-06-10 ~ 2025-06-20',
                     items: [
                         {
-                            id:1,
+                            id: 1,
                             title: '뷰어 화면 개편',
                             cont: '프로젝트2-1의 내용을 서술',
                             imgs: [
-                                {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
+                                { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
                             ]
                         },
                         {
-                            id:2,
+                            id: 2,
                             title: '타이틀',
                             cont: '프로젝트2-2의 내용을 서술',
                             imgs: [
-                                {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
+                                { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
                             ]
                         },
                         {
-                            id:3,
+                            id: 3,
                             title: '타이틀',
                             cont: '프로젝트2-3의 내용을 서술',
                             imgs: [
-                                {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
+                                { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
                             ]
                         },
                         {
-                            id:3,
+                            id: 3,
                             title: '타이틀',
                             cont: '프로젝트2-3의 내용을 서술',
                             imgs: [
-                                {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
+                                { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
                             ]
                         },
                         {
-                            id:3,
+                            id: 3,
                             title: '타이틀',
                             cont: '프로젝트2-3의 내용을 서술',
                             imgs: [
-                                {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
+                                { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
                             ]
                         },
                         {
-                            id:3,
+                            id: 3,
                             title: '타이틀',
                             cont: '프로젝트2-3의 내용을 서술',
                             imgs: [
-                                {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
+                                { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
                             ]
                         },
                         {
-                            id:3,
+                            id: 3,
                             title: '타이틀',
                             cont: '프로젝트2-3의 내용을 서술',
                             imgs: [
-                                {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
+                                { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
                             ]
                         },
 
@@ -157,33 +157,33 @@ export default function portfolioForm() {
                     date: '2025-06-10 ~ 2025-06-20',
                     items: [
                         {
-                            id:1,
+                            id: 1,
                             cont: '프로젝트3-1의 내용을 서술',
                             title: '타이틀',
                             imgs: [
-                                {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
+                                { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
                             ]
                         },
                         {
-                            id:2,
+                            id: 2,
                             cont: '프로젝트3-2의 내용을 서술',
                             title: '타이틀',
                             imgs: [
-                                {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
+                                { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
                             ]
                         },
                         {
-                            id:3,
+                            id: 3,
                             cont: '프로젝트3-3의 내용을 서술',
                             title: '타이틀',
                             imgs: [
-                                {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
+                                { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
                             ]
                         },
                     ],
@@ -202,13 +202,13 @@ export default function portfolioForm() {
                     date: '2025-06-10 ~ 2025-06-20',
                     items: [
                         {
-                            id:1,
+                            id: 1,
                             cont: '프로젝트3-1의 내용을 서술',
                             title: '타이틀',
                             imgs: [
-                                {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
-                                , {img:'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80'}
+                                { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
+                                , { img: 'https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=400&q=80' }
                             ]
                         }
                     ],
@@ -234,7 +234,7 @@ export default function portfolioForm() {
                 <section className="menu-section">
                     <div className="menu-box">
                         {companyList.map(company => (
-                            <PortfolioMenu key={company.id} data={company}  isSelected={selectedCompany?.id === company.id} onClick={() => setSelectedCompany(company)}/>
+                            <PortfolioMenu key={company.id} data={company} isSelected={selectedCompany?.id === company.id} onClick={() => setSelectedCompany(company)} />
                         ))}
                     </div>
                     <div className="button-section">
@@ -247,7 +247,7 @@ export default function portfolioForm() {
                 </section>
                 <section className="cont-section">
                     <div className="cont-box">
-                        <PortfolioProject data={selectedCompany}/>
+                        <PortfolioProject data={selectedCompany} />
                     </div>
                 </section>
             </main>

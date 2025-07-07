@@ -37,14 +37,14 @@ public class DocController {
         ParamMap params = ParamMap.init(docsTree);
         docService.saveDocsTree(new AccountDto(), params);
 
-        return ResponseEntity.ok(StatusCode.SUCCESS);
+        return new ResponseEntity<>(StatusCode.SUCCESS, StatusCode.SUCCESS.getStatusCode());
     }
 
     @DeleteMapping("")
     public ResponseEntity<StatusCode> deleteMethodName(@ModelAttribute RequestDocDto requestDocDto) {
         docService.deleteDoc(new AccountDto(), requestDocDto);
 
-        return ResponseEntity.ok(StatusCode.SUCCESS);
+        return new ResponseEntity<>(StatusCode.SUCCESS, StatusCode.SUCCESS.getStatusCode());
     }
 
     @GetMapping("/docsTree")

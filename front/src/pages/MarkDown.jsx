@@ -19,20 +19,6 @@ const MarkDown = () => {
         });
     }, []);
 
-    useEffect(() => {
-        const handleBeforeUnload = (e) => {
-            e.preventDefault();
-            e.returnValue =
-                '새로고침을 하면 작성중인 데이터가 전부 없어집니다.\n정말 새로고침하시겠습니까?\n저장하고 새로고침할 것을 권장합니다.';
-        };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-    }, []);
-
     const handleSelectFile = async (node) => {
         if (!node || node.type !== 'md') return;
 

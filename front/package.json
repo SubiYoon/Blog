@@ -33,7 +33,6 @@
         "rehype-raw": "^7.0.0",
         "remark-gfm": "^4.0.1",
         "sweetalert2": "^11.22.2",
-        "sync-request": "^6.1.0"
         "sync-request": "^6.1.0",
         "yet-another-react-lightbox": "^3.23.3"
     },

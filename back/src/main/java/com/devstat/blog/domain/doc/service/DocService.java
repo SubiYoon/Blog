@@ -55,12 +55,12 @@ public class DocService {
     // 프로젝트 단위 Map: key = 프로젝트명, value = 그 안의 폴더 및 md 파일 경로 리스트
     private Map<String, List<String>> folderTree;
 
-    @Git(task = "pull --rebase origin main")
     @InjectAccountInfo
     public String getDocsTree(AccountDto accountDto) {
         String json = "";
         folderTree = new HashMap<>();
 
+        GitUtil.gitTask(accountDto, blogFilePath, "pull", "--rebase", "origin", "main");
         try (Stream<Path> projectDirs = Files.list(Paths.get(blogFilePath + "/" + accountDto.getAccountId()))) {
             projectDirs
                     .filter(Files::isDirectory)
@@ -221,13 +221,12 @@ public class DocService {
                 }
 
                 try (Stream<Path> walk = Files.walk(filePath)) {
-                    walk.sorted(Comparator.reverseOrder()) // 가장 하위부터 삭제
+                    walk.sorted(Comparator.reverseOrder()) // 하위부터 삭제
                             .forEach(path -> {
                                 try {
                                     Files.deleteIfExists(path);
                                     Member member = memberJpa.findById(accountDto.getAccountId())
                                             .orElseThrow(() -> new CmmnException(StatusCode.MEMBER_NOT_FOUND));
-
                                     DocHistory docHistory = DocHistory.of(member, path.toString(),
                                             FileStatusCode.DELETE);
                                     docJpa.save(docHistory);
@@ -239,11 +238,41 @@ public class DocService {
 
             } else {
                 Files.deleteIfExists(filePath);
+
                 Member member = memberJpa.findById(accountDto.getAccountId())
                         .orElseThrow(() -> new CmmnException(StatusCode.MEMBER_NOT_FOUND));
 
                 DocHistory docHistory = DocHistory.of(member, filePath.toString(), FileStatusCode.DELETE);
                 docJpa.save(docHistory);
+
+                // ✅ 삭제 이후 상위 폴더에 .md가 없으면 상위 폴더도 삭제
+                Path parentDir = filePath.getParent();
+
+                // 루트 blog 경로까지만 올라가며 검사
+                Path rootPath = Paths.get(blogFilePath, accountDto.getAccountId());
+
+                while (parentDir != null && parentDir.startsWith(rootPath) && !parentDir.equals(rootPath)) {
+                    try (Stream<Path> files = Files.list(parentDir)) {
+                        boolean hasMarkdown = files.anyMatch(p -> p.toString().endsWith(".md"));
+
+                        if (!hasMarkdown) {
+                            Files.deleteIfExists(parentDir);
+
+                            DocHistory parentHistory = DocHistory.of(member, parentDir.toString(),
+                                    FileStatusCode.DELETE);
+                            docJpa.save(parentHistory);
+
+                            parentDir = parentDir.getParent(); // 계속 상위로 탐색
+                        } else {
+                            break;
+                        }
+                    }
+                }
+
+                // Git 반영
+                GitUtil.gitTask(accountDto, blogFilePath, "add", ".");
+                GitUtil.gitTask(accountDto, blogFilePath, "commit", "-m", "삭제");
+                GitUtil.gitTask(accountDto, blogFilePath, "push", "origin", "main");
             }
         } catch (IOException e) {
             throw new CmmnException(StatusCode.DOC_DELETE_FAIL, e);
