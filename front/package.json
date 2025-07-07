@@ -31,7 +31,8 @@
         "rehype-highlight": "^7.0.2",
         "rehype-raw": "^7.0.0",
         "remark-gfm": "^4.0.1",
-        "sync-request": "^6.1.0"
+        "sync-request": "^6.1.0",
+        "yet-another-react-lightbox": "^3.23.3"
     },
     "devDependencies": {
         "@docusaurus/module-type-aliases": "3.8.0",
