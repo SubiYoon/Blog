@@ -37,17 +37,17 @@ const DocsTreeSidebar = ({ treeData, setTreeData, onSelectFile }) => {
             : targetNode.filePath.substring(0, targetNode.filePath.lastIndexOf('/'));
 
         const newFullPath = parentPath === '/' ? `/${title}` : `${parentPath}/${title}`;
-        const newNodeType = type === 'file' ? 'md' : 'folder';
+        const newNodeType = type === 'file' ? title.split('.')[1] : 'folder';
 
         const titleArr = title.split('.');
 
         if (type === 'file' && titleArr.length < 2) {
-            $alert('파일은 확장자를 입력해야 합니다.', '가능한 확장자 .json, .js, .md, .ts', 'error');
+            $alert('사용할 수 없는 확장자입니다.', '가능한 확장자 .md, .mdx', 'error');
             return
         }
 
-        if (type === 'file' && !titleArr[1].includes('md', 'js', 'ts*', 'json')) {
-            $alert('사용할 수 없는 확장자입니다.', '가능한 확장자 .json, .js, .md, .ts', 'error');
+        if (type === 'file' && !['md', 'mdx'].includes(titleArr[1])) {
+            $alert('사용할 수 없는 확장자입니다.', '가능한 확장자 .md, .mdx', 'error');
             return
         }
 
@@ -57,11 +57,20 @@ const DocsTreeSidebar = ({ treeData, setTreeData, onSelectFile }) => {
             return;
         }
 
+        const DEFAULT_FILE_TAGS = `---
+tags:
+  - tag1
+  - tag2
+---
+`;
+
         const newNode = {
             title,
             type: newNodeType,
             filePath: newFullPath,
-            ...(type === 'folder' ? { children: [] } : { content: '' })
+            status: 'new',
+            isRootFolder: newFullPath.lastIndexOf('/') === 0 ? true : false,
+            ...(type === 'folder' ? { children: [] } : { content: DEFAULT_FILE_TAGS }),
         };
 
         const updatedTree =
@@ -121,6 +130,8 @@ const DocsTreeSidebar = ({ treeData, setTreeData, onSelectFile }) => {
                     $axios.delete('/doc', { params: node.type === 'folder' ? { filePath: node.filePath } : node }).then(async response => {
                         if (response.data.customCode === 'SUCCESS') {
                             await $alert('제거 성공!', '', 'success');
+                        } else if (response.data.customCode === 'EXECUTE_FRONT_RESTART') {
+                            $axios.post('/doc/restart')
                         } else {
                             $alert('제거 실패!', `서버 관리자에게 문의 하세요.`, 'error');
                         }

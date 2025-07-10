@@ -34,6 +34,7 @@
         "remark-gfm": "^4.0.1",
         "sweetalert2": "^11.22.2",
         "sync-request": "^6.1.0",
+        "unist-util-visit": "^5.0.0",
         "yet-another-react-lightbox": "^3.23.3"
     },
     "devDependencies": {

@@ -33,23 +33,29 @@ public class DocController {
     }
 
     @PostMapping("")
-    public ResponseEntity<StatusCode> postMethodName(@RequestBody JsonParams docsTree) {
+    public ResponseEntity<StatusCode> saveDocsTree(@RequestBody JsonParams docsTree) {
         ParamMap params = ParamMap.init(docsTree);
-        docService.saveDocsTree(new AccountDto(), params);
+        StatusCode code = docService.saveDocsTree(new AccountDto(), params);
 
-        return new ResponseEntity<>(StatusCode.SUCCESS, StatusCode.SUCCESS.getStatusCode());
+        return new ResponseEntity<>(code, code.getStatusCode());
     }
 
     @DeleteMapping("")
-    public ResponseEntity<StatusCode> deleteMethodName(@ModelAttribute RequestDocDto requestDocDto) {
-        docService.deleteDoc(new AccountDto(), requestDocDto);
+    public ResponseEntity<StatusCode> deleteDoc(@ModelAttribute RequestDocDto requestDocDto) {
+        StatusCode code = docService.deleteDoc(new AccountDto(), requestDocDto);
 
-        return new ResponseEntity<>(StatusCode.SUCCESS, StatusCode.SUCCESS.getStatusCode());
+        return new ResponseEntity<>(code, code.getStatusCode());
     }
 
     @GetMapping("/docsTree")
     public ResponseEntity<String> getDocsTree() {
         return ResponseEntity.ok(docService.getDocsTree(new AccountDto()));
+    }
+
+    @PostMapping("/restart")
+    public ResponseEntity<StatusCode> restartFront() {
+        docService.restartFront();
+        return new ResponseEntity<>(StatusCode.SUCCESS, StatusCode.SUCCESS.getStatusCode());
     }
 
 }

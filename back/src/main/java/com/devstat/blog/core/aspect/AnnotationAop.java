@@ -46,14 +46,4 @@ public class AnnotationAop {
         }
         return joinPoint.proceed();
     }
-
-    @Around("@annotation(com.devstat.blog.core.annotation.restartDocs)")
-    public Object restartDocs(ProceedingJoinPoint joinPoint) throws Throwable {
-
-        log.info("Docs 재시작");
-
-        NpmUtil.docsRestart();
-
-        return joinPoint.proceed();
-    }
 }

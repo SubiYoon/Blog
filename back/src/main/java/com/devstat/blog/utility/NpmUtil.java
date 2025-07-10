@@ -3,34 +3,46 @@ package com.devstat.blog.utility;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.devstat.blog.core.aspect.AccountDto;
 import com.devstat.blog.core.code.StatusCode;
 import com.devstat.blog.core.exception.CmmnException;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class NpmUtil {
 
-    private static final int TARGET_PORT = 3000;
+    private final int TARGET_PORT = 3000;
+
     @Value("${blog.file.path}")
-    private static String rootRepo;
+    private String blogRootPath;
+    @Value("${blog.front.path}")
+    private String blogFrontPath;
+    @Value("${blog.just.path}")
+    private String justExecutablePath;
 
-    public static void docsRestart() {
+    private static Process npmProcess; // To hold the background npm process
+    private static final AtomicBoolean shutdownHookRegistered = new AtomicBoolean(false);
+
+    public void docsRestart() {
         try {
-            // 0️⃣ Git pull
-            gitPull();
-
             // 1️⃣ 3000 포트를 점유 중인 프로세스 강제 종료
-            killProcessOnPort(TARGET_PORT);
+            frontJustTask("stop", String.valueOf(TARGET_PORT));
 
-            // 2️⃣ dev 서버 실행
-            startDevServer();
+            // 2️⃣ dev 서버 실행 (이제 백그라운드에서 실행됨)
+            frontJustTask("dev");
 
         } catch (Exception e) {
             throw new CmmnException(StatusCode.DOCS_RESTART_FAIL, e);
@@ -38,10 +50,9 @@ public class NpmUtil {
     }
 
     // 0️⃣ Git pull 수행
-    private static void gitPull() throws Exception {
-        AccountDto currentAccount = SecurityUtil.getCurrentMember(new AccountDto());
+    public void gitPull(String alias) throws Exception {
 
-        File git_repo_dir = new File(rootRepo + currentAccount.getAccountId());
+        File git_repo_dir = new File(blogRootPath + "/" + alias);
 
         ProcessBuilder builder = new ProcessBuilder("git", "pull");
         builder.directory(git_repo_dir);
@@ -64,56 +75,95 @@ public class NpmUtil {
         log.info("✅ Git pull 완료");
     }
 
-    // 1️⃣ 해당 포트를 사용하는 프로세스를 종료
-    private static void killProcessOnPort(int port) throws Exception {
-        ProcessBuilder builder = new ProcessBuilder("bash", "-c", "lsof -ti :" + port);
-        Process process = builder.start();
+    private void frontJustTask(String... args) throws Exception {
+        File frontDir = new File(blogFrontPath).getCanonicalFile();
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-            String pid;
-            while ((pid = reader.readLine()) != null) {
-                log.info("🔍 포트 {}에서 프로세스 발견: PID={}", port, pid);
-                Process kill = new ProcessBuilder("kill", "-9", pid).start();
-                kill.waitFor();
-                log.info("💀 PID {} 종료 완료", pid);
-            }
+        if (args.length < 1) {
+            throw new IllegalArgumentException("just 명령어가 비어있습니다.");
         }
 
-        process.waitFor();
-    }
+        String action = args[0];
 
-    // 2️⃣ npm run dev 실행
-    private static void startDevServer() throws Exception {
-        File frontDir = new File("/front").getCanonicalFile();
+        List<String> commandList = new ArrayList<>();
+        commandList.add(justExecutablePath);
+        commandList.addAll(Arrays.asList(args));
 
-        ProcessBuilder builder = new ProcessBuilder("npm", "run", "dev");
+        ProcessBuilder builder = new ProcessBuilder(commandList);
         builder.directory(frontDir);
         builder.redirectErrorStream(true);
 
         Process process = builder.start();
+        String commandString = String.join(" ", commandList);
 
-        // 비동기 로그 출력
-        new Thread(() -> {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                String line;
-                boolean foundSuccess = false;
-                while ((line = reader.readLine()) != null) {
-                    log.info("[npm] {}", line);
-                    // ✅ 성공 키워드는 프레임워크별로 달라서 일부 수정
-                    if (line.contains("compiled successfully")) {
-                        foundSuccess = true;
+        if ("dev".equals(action)) {
+            // Store the process for later termination
+            npmProcess = process;
+
+            // Register shutdown hook only once
+            if (shutdownHookRegistered.compareAndSet(false, true)) {
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    if (npmProcess != null && npmProcess.isAlive()) {
+                        log.info("Shutting down npm process...");
+                        npmProcess.destroyForcibly();
+                        try {
+                            npmProcess.waitFor(10, TimeUnit.SECONDS); // Give it some time to terminate
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            log.warn("Interrupted while waiting for npm process to terminate.", e);
+                        }
+                        if (npmProcess.isAlive()) {
+                            log.error("npm process did not terminate gracefully.");
+                        } else {
+                            log.info("npm process terminated.");
+                        }
+                    }
+                }));
+            }
+
+            // Start a thread to read and log output without blocking
+            Thread devReaderThread = new Thread(() -> {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String devLine;
+                    boolean compiledSuccessfully = false;
+                    while ((devLine = reader.readLine()) != null) {
+                        log.info("[{}] {}", action, devLine);
+                        if (devLine.contains("compiled successfully")) {
+                            compiledSuccessfully = true;
+                            log.info("✅ Docusaurus dev server compiled successfully (port {})", TARGET_PORT);
+                        }
+                    }
+                    if (!compiledSuccessfully) {
+                        log.warn("Docusaurus dev server output stream ended without 'compiled successfully' message.");
+                    }
+                } catch (Exception e) {
+                    if (!"Stream closed".equals(e.getMessage())) {
+                        log.error("dev server log reader thread error", e);
                     }
                 }
+            });
+            devReaderThread.setDaemon(true); // Allow JVM to exit even if this thread is running
+            devReaderThread.start();
 
-                if (!foundSuccess) {
-                    log.warn("npm run dev 실행 결과에 성공 키워드가 없습니다.");
+            log.info("✅ Docusaurus dev server started in background (port {})", TARGET_PORT);
+
+        } else if ("stop".equals(action)) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    log.info("[{}] {}", action, line);
                 }
-
-            } catch (Exception e) {
-                log.error("npm 로그 읽기 중 오류", e);
             }
-        }).start();
 
-        log.info("✅ npm dev 서버 실행 요청 완료 (포트 {})", TARGET_PORT);
-    }
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                log.warn("❌ Port termination command might have failed. (exitCode={})", exitCode);
+            }
+
+            log.info("✅ Port termination command executed: {}", commandString);
+
+        } else {
+            throw new IllegalArgumentException("Unsupported just command: " + action);
+        }
+
+    } // No catch block here, let exceptions propagate to docsRestart
 }

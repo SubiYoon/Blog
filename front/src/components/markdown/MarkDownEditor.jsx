@@ -193,7 +193,7 @@ const MarkdownEditor = ({ selectedFile, treeData, setTreeData, updateTreeData, o
                 <div className="editor-header">
                     <div className="editor-header-left">
                         <Edit size={16} />
-                        <span> 제목 / 마크다운 입력(escape 필수로 사용&apos; \ &apos;)</span>
+                        <span> 제목 / 마크다운 입력(escape 필수로 사용 &apos; \ &apos; )</span>
                     </div>
                     <div className='submit-button-wrapper'>
                         <button className="submit-button" onClick={handleSubmit}>

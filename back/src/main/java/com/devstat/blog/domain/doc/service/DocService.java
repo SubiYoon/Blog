@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.devstat.blog.core.ParamMap;
-import com.devstat.blog.core.annotation.Git;
 import com.devstat.blog.core.annotation.InjectAccountInfo;
 import com.devstat.blog.core.aspect.AccountDto;
 import com.devstat.blog.core.code.StatusCode;
@@ -21,8 +20,13 @@ import com.devstat.blog.domain.doc.repository.DocJpa;
 import com.devstat.blog.domain.doc.repository.DocQuery;
 import com.devstat.blog.domain.member.entity.Member;
 import com.devstat.blog.domain.member.repository.MemberJpa;
+import com.devstat.blog.domain.menu.entity.Menu;
+import com.devstat.blog.domain.menu.repository.MenuJpa;
 import com.devstat.blog.utility.GitUtil;
+import com.devstat.blog.utility.NpmUtil;
 import com.devstat.blog.utility.StringUtil;
+
+import jakarta.persistence.EntityManager;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -36,6 +40,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -47,10 +53,17 @@ public class DocService {
     @Value("${blog.file.path}")
     private String blogFilePath;
 
+    private boolean isIncludeNewRootFolder = false;
+
     private final DocJpa docJpa;
+    private final MenuJpa menuJpa;
     private final MemberJpa memberJpa;
 
     private final DocQuery docQuery;
+
+    private final NpmUtil npmUtil;
+
+    private final EntityManager em;
 
     // 프로젝트 단위 Map: key = 프로젝트명, value = 그 안의 폴더 및 md 파일 경로 리스트
     private Map<String, List<String>> folderTree;
@@ -92,8 +105,7 @@ public class DocService {
         try (Stream<Path> paths = Files.walk(projectRoot)) {
             paths
                     .filter(path -> Files.isRegularFile(path)
-                            && (path.toString().endsWith(".md") || path.toString().endsWith(".json")
-                                    || path.toString().endsWith(".js") || path.toString().endsWith(".ts"))
+                            && path.toString().endsWith(".md")
                             || Files.isDirectory(path))
                     .forEach(path -> {
                         Path relative = projectRoot.relativize(path);
@@ -127,6 +139,8 @@ public class DocService {
 
             String content = new String(bytes);
 
+            content = convertObsidianLinksToMarkdown(content, accountDto.getAccountId());
+
             return DocDto.builder()
                     .title(requestDocDto.getTitle())
                     .content(content)
@@ -137,10 +151,29 @@ public class DocService {
         }
     }
 
+    private String convertObsidianLinksToMarkdown(String content, String accountId) {
+        // 정규식으로 [[파일이름]] 찾기
+        Pattern pattern = Pattern.compile("!\\[\\[(.+?)]]");
+        Matcher matcher = pattern.matcher(content);
+
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String fileName = matcher.group(1); // 내부 파일 이름 추출
+            String fullPath = "/Attached File/" + fileName;
+
+            // 대체할 마크다운 문법
+            String replacement = "![" + fileName + "](" + fullPath.replaceAll(" ", "%20") + ")";
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+        }
+        matcher.appendTail(sb);
+
+        return sb.toString();
+    }
+
     @Transactional
     @InjectAccountInfo
     @SuppressWarnings("unchecked")
-    public void saveDocsTree(AccountDto accountDto, ParamMap params) {
+    public StatusCode saveDocsTree(AccountDto accountDto, ParamMap params) {
         List<Map<String, Object>> docsTree = (List<Map<String, Object>>) params.get("docsTree");
         String commitMessage = (String) params.get("commitMessage");
         List<Path> createdFiles = new ArrayList<>(); // 생성된 파일들 추적용
@@ -151,6 +184,13 @@ public class DocService {
             GitUtil.gitTask(accountDto, blogFilePath, "add", ".");
             GitUtil.gitTask(accountDto, blogFilePath, "commit", "-m", commitMessage);
             GitUtil.gitTask(accountDto, blogFilePath, "push", "origin", "main");
+
+            if (isIncludeNewRootFolder) {
+                isIncludeNewRootFolder = false;
+                return StatusCode.EXECUTE_FRONT_RESTART;
+            }
+
+            return StatusCode.SUCCESS;
         } catch (Exception e) {
             // 생성된 파일 삭제
             for (Path path : createdFiles) {
@@ -175,12 +215,27 @@ public class DocService {
             if ("folder".equals(docs.get("type"))) {
                 if (!file.exists()) {
                     file.mkdirs(); // 폴더는 삭제할 필요 없음 (보통 비워지면 자동 삭제)
+                    if ((boolean) docs.get("isRootFolder")) {
+                        isIncludeNewRootFolder = true;
+
+                        Member findMember = memberJpa.findById(id)
+                                .orElseThrow(() -> new CmmnException(StatusCode.MEMBER_NOT_FOUND));
+
+                        Menu menu = Menu.of(docs.get("title").toString(), docs.get("title").toString(), findMember);
+
+                        // em.persist(menu);
+                        // em.flush();
+                        menuJpa.save(menu);
+                    }
                 }
                 if (docs.get("children") != null) {
                     saveDocRecursive(id, (List<Map<String, Object>>) docs.get("children"), createdFiles);
                 }
 
-            } else if ("md".equals(docs.get("type"))) {
+            } else if ("md".equals(docs.get("type"))
+                    || "json".equals(docs.get("type"))
+                    || "js".equals(docs.get("type"))
+                    || "ts".equals(docs.get("type"))) {
                 if (docs.get("content") != null && !"".equals(docs.get("content"))) {
                     try (FileWriter fw = new FileWriter(file)) {
                         Member member = memberJpa.findById(id)
@@ -193,9 +248,11 @@ public class DocService {
                             docHistory = DocHistory.of(member, filePath, FileStatusCode.CREATE);
                         }
 
-                        fw.write(docs.get("content").toString());
+                        fw.write(convertMarkdownImageToObsidian(docs.get("content").toString()));
                         createdFiles.add(file.toPath()); // 생성된 파일 리스트에 추가
 
+                        // em.persist(docHistory);
+                        // em.flush();
                         docJpa.save(docHistory);
                     } catch (Exception e) {
                         throw new CmmnException(StatusCode.DOC_SAVE_FAIL, e);
@@ -207,8 +264,24 @@ public class DocService {
         }
     }
 
+    private String convertMarkdownImageToObsidian(String content) {
+        // 정규식: ![파일이름](경로)
+        Pattern pattern = Pattern.compile("!\\[(.+?)]\\((.+?)\\)");
+        Matcher matcher = pattern.matcher(content);
+
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String altText = matcher.group(1); // 파일 이름 (ex. 스크린샷 2025-07-10 오후 1.11.22.png)
+            String replacement = "![[" + altText + "]]";
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    @Transactional
     @InjectAccountInfo
-    public void deleteDoc(AccountDto accountDto, RequestDocDto requestDocDto) {
+    public StatusCode deleteDoc(AccountDto accountDto, RequestDocDto requestDocDto) {
         Path filePath = Paths.get(blogFilePath + "/" + accountDto.getAccountId() + requestDocDto.getFilePath());
 
         try {
@@ -229,6 +302,24 @@ public class DocService {
                                             .orElseThrow(() -> new CmmnException(StatusCode.MEMBER_NOT_FOUND));
                                     DocHistory docHistory = DocHistory.of(member, path.toString(),
                                             FileStatusCode.DELETE);
+
+                                    String fileName = path.toString()
+                                            .replace(blogFilePath + "/" + accountDto.getAccountId(), ""); // 바로 앞에 '/'가
+                                                                                                          // 붙어 있는 이름의
+                                                                                                          // 형태
+
+                                    if (fileName.lastIndexOf("/") == 0) {
+                                        Menu menu = menuJpa.findByTargetFolder(fileName.replace("/", ""));
+
+                                        menuJpa.delete(menu);
+                                        // em.remove(menu);
+                                        // em.flush();
+
+                                        isIncludeNewRootFolder = true;
+                                    }
+
+                                    // em.persist(docHistory);
+                                    // em.flush();
                                     docJpa.save(docHistory);
                                 } catch (IOException e) {
                                     throw new CmmnException(StatusCode.DOC_DELETE_FAIL, e);
@@ -243,6 +334,8 @@ public class DocService {
                         .orElseThrow(() -> new CmmnException(StatusCode.MEMBER_NOT_FOUND));
 
                 DocHistory docHistory = DocHistory.of(member, filePath.toString(), FileStatusCode.DELETE);
+                // em.persist(docHistory);
+                // em.flush();
                 docJpa.save(docHistory);
 
                 // ✅ 삭제 이후 상위 폴더에 .md가 없으면 상위 폴더도 삭제
@@ -260,6 +353,9 @@ public class DocService {
 
                             DocHistory parentHistory = DocHistory.of(member, parentDir.toString(),
                                     FileStatusCode.DELETE);
+
+                            // em.persist(parentHistory);
+                            // em.flush();
                             docJpa.save(parentHistory);
 
                             parentDir = parentDir.getParent(); // 계속 상위로 탐색
@@ -269,13 +365,25 @@ public class DocService {
                     }
                 }
 
-                // Git 반영
-                GitUtil.gitTask(accountDto, blogFilePath, "add", ".");
-                GitUtil.gitTask(accountDto, blogFilePath, "commit", "-m", "삭제");
-                GitUtil.gitTask(accountDto, blogFilePath, "push", "origin", "main");
             }
+
+            // Git 반영
+            GitUtil.gitTask(accountDto, blogFilePath, "add", ".");
+            GitUtil.gitTask(accountDto, blogFilePath, "commit", "-m", "삭제");
+            GitUtil.gitTask(accountDto, blogFilePath, "push", "origin", "main");
+
+            if (isIncludeNewRootFolder) {
+                isIncludeNewRootFolder = false;
+                return StatusCode.EXECUTE_FRONT_RESTART;
+            }
+
+            return StatusCode.SUCCESS;
         } catch (IOException e) {
             throw new CmmnException(StatusCode.DOC_DELETE_FAIL, e);
         }
+    }
+
+    public void restartFront() {
+        npmUtil.docsRestart();
     }
 }

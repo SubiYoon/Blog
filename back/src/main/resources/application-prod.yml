@@ -6,6 +6,10 @@ spring:
 blog:
   file:
     path: /nas/project/blog
+  front:
+    path: ./front
+  just:
+    path: /opt/homebrew/bin/just
 
 origin:
   url: https://blog.devstat.com

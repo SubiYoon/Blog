@@ -1,5 +1,6 @@
 import { themes as prismThemes } from 'prism-react-renderer'
 import { $axios } from './src/api'
+import { remarkObsidianImage } from './src/plugins/remark.js'
 
 /** @type {import('@docusaurus/types').Config} */
 export default async function createConfigAsync() {
@@ -43,6 +44,7 @@ export default async function createConfigAsync() {
                     docs: {
                         routeBasePath: '/',
                         sidebarPath: './sidebars.ts',
+                        remarkPlugins: [remarkObsidianImage],
                     },
                     blog: {
                         showReadingTime: true,

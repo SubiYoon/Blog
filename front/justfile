@@ -2,7 +2,14 @@
 # just reference  : https://just.systems/man/en/
 
 @dev:
-    npm --inspect-brk run dev
+    echo "🧹 Clearing previous builds..." 
+    npm run clear
+
+    echo "📦 Installing dependencies..." 
+    npm install
+
+    echo "🚀 Starting dev server..." 
+    npm run dev
 
 @stop port:
 	echo "🔍 포트 {{port}} 점유 프로세스를 검색 중..." && \
