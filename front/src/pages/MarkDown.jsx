@@ -8,8 +8,10 @@ import { $axios } from '../api';
 import Layout from '@theme/Layout';
 import ResizableSidebar from '../components/layout/ResizableSidebar';
 import { $alert } from '../components/ui/SweetAlert';
+import { useHistory } from '@docusaurus/router';
 
 const MarkDown = () => {
+    const history = useHistory();
     const [docsTree, setDocsTree] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
 
@@ -92,6 +94,13 @@ const MarkDown = () => {
         });
     };
 
+    const logout = () => {
+        $axios.post('/logout').then(() => {
+            history.push('/')
+            localStorage.removeItem('DEVSTAT-JWT');
+        });
+    }
+
     return (
         <Layout title="문서">
             <main className="wrap">
@@ -100,7 +109,7 @@ const MarkDown = () => {
                         <a>문서편집</a>
                         <a>포토폴리오 편집</a>
                         <div className="logout-box">
-                            <a>로그아웃</a>
+                            <a onClick={logout}>로그아웃</a>
                         </div>
                     </div>
                 </section>

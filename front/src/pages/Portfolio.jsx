@@ -3,6 +3,7 @@ import '../css/portfolio.css';
 import PortfolioMenu from "../components/PortfolioMenu";
 import { useState } from "react";
 import PortfolioProject from "../components/PortfolioProject";
+import { $axios } from '../api';
 
 export default function portfolioForm() {
 
@@ -219,6 +220,13 @@ export default function portfolioForm() {
 
     const [selectedCompany, setSelectedCompany] = useState(companyList[0]);
 
+    const logout = () => {
+        $axios.post('/logout').then(() => {
+            history.push('/')
+            localStorage.removeItem('DEVSTAT-JWT');
+        });
+    }
+
     return (
         <Layout title="포트폴리오">
             <main className="wrap">
@@ -227,7 +235,7 @@ export default function portfolioForm() {
                         <a>문서편집</a>
                         <a>포토폴리오 편집</a>
                         <div className="logout-box">
-                            <a>로그아웃</a>
+                            <a onClick={logout}>로그아웃</a>
                         </div>
                     </div>
                 </section>
