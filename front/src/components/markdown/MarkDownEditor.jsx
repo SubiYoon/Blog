@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/tokyo-night-dark.min.css';
-import { DownloadCloud, Edit, Eye, Save, UploadCloud } from 'lucide-react';
+import { DownloadCloud, Edit, Eye, ListRestart, RefreshCcwDot, RefreshCcwIcon, RefreshCwOffIcon, Save, UploadCloud } from 'lucide-react';
 import { $alert, $confirm, $prompt } from '../ui/SweetAlert';
 import { $axios } from '../../api';
 
@@ -175,13 +175,25 @@ const MarkdownEditor = ({ selectedFile, treeData, setTreeData, updateTreeData, o
         }
     };
 
-    const gitPush = async () => {
-        if (await $confirm('Github에 반영 하시겠습니까?', '저장하지 않은 데이터는 Push에 반영되지 않습니다.', 'question', '반영', '취소')) {
-            $axios.post('/git', { task: 'push origin main' }).then(res => {
+    const restartDocs = async () => {
+        if (await $confirm('1시간 배치를 기다리지 않고 바로 반영하시겠습니까?', 'docusaurus가 재시작됩니다.', 'question', '재시작', '취소')) {
+            $axios.post('/doc/restart', {}).then(res => {
                 if (res.data.customCode === 'SUCCESS') {
-                    $alert('Git Push 성공!', '', 'success');
+                    $alert('재시작합니다.', '', 'success');
                 } else {
-                    $alert('Git Push 실패', `서버 관리자에게 문의 하세요.`, 'error');
+                    $alert('재시작 실패', `서버 관리자에게 문의 하세요.`, 'error');
+                }
+            });
+        }
+    }
+
+    const gitPull = async () => {
+        if (await $confirm('GitHub와 동기화 시킵니다.', 'docusaurus가 재시작 될 수 있습니다.', 'question', 'pull', '취소')) {
+            $axios.post('/doc/pull', {}).then(res => {
+                if (res.data.customCode === 'SUCCESS') {
+                    $alert('git pull 완료!', '', 'success');
+                } else {
+                    $alert('git pull 실패!', `서버 관리자에게 문의 하세요.`, 'error');
                 }
             });
         }
@@ -199,6 +211,14 @@ const MarkdownEditor = ({ selectedFile, treeData, setTreeData, updateTreeData, o
                         <button className="submit-button" onClick={handleSubmit}>
                             <Save size={16} style={{ marginRight: '6px' }} />
                             저장
+                        </button>
+                        <button className="submit-button" onClick={restartDocs}>
+                            <RefreshCcwIcon size={16} style={{ marginRight: '6px' }} />
+                            docs 재시작
+                        </button>
+                        <button className="submit-button" onClick={gitPull}>
+                            <RefreshCcwIcon size={16} style={{ marginRight: '6px' }} />
+                            Git pull
                         </button>
                     </div>
                 </div>

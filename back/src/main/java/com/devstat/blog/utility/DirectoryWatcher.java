@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -67,7 +66,8 @@ public class DirectoryWatcher {
                     }
 
                     log.info("Scanning and registering directories under {}", rootPath);
-                    registerAll(rootPath);
+                    // registerAll(rootPath); // Original: Recursively registers all subdirectories
+                    register(rootPath); // Modified: Only registers the root directory
                     log.info("Initial registration complete.");
 
                     if (watcherThreadStarted.compareAndSet(false, true)) {
@@ -97,20 +97,6 @@ public class DirectoryWatcher {
                 StandardWatchEventKinds.ENTRY_DELETE);
         keys.put(key, dir);
         log.debug("Registered directory: {}", dir);
-    }
-
-    private static void registerAll(final Path start) throws IOException {
-        Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                if (excludedDirs.contains(dir.getFileName().toString())) {
-                    log.info("Excluding directory from watch: {}", dir);
-                    return FileVisitResult.SKIP_SUBTREE;
-                }
-                register(dir);
-                return FileVisitResult.CONTINUE;
-            }
-        });
     }
 
     private static void processEvents() {
@@ -165,21 +151,6 @@ public class DirectoryWatcher {
                 log.info("Event kind: {}, File affected: {}", kind.name(), child);
                 eventDetected = true; // Mark that a non-excluded event was detected
 
-                // if a new directory is created, and it is not in excluded list, register it
-                // and its sub-directories
-                if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                    try {
-                        if (Files.isDirectory(child, LinkOption.NOFOLLOW_LINKS)) {
-                            if (!excludedDirs.contains(child.getFileName().toString())) {
-                                registerAll(child);
-                            } else {
-                                log.debug("Not registering newly created excluded directory: {}", child);
-                            }
-                        }
-                    } catch (IOException e) {
-                        log.error("Failed to register new directory: {}", child, e);
-                    }
-                }
             }
 
             // Apply global debounce for the "파일 변경 이력 발생!" log
@@ -207,7 +178,7 @@ public class DirectoryWatcher {
                         }
                     }
 
-                    npmUtil.docsRestart();
+                    npmUtil.docsRestart(false);
                     lastGlobalEventTime = currentTime;
                 } else {
                     log.debug("Debouncing global event log. Last log was {}ms ago.", currentTime - lastGlobalEventTime);

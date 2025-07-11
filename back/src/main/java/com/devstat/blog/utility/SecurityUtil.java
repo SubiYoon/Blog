@@ -9,7 +9,7 @@ import com.devstat.blog.core.aspect.AccountDto;
 public class SecurityUtil {
 
     @InjectAccountInfo
-    AccountDto getCurrentMember(AccountDto accountDto) {
+    public AccountDto getCurrentMember(AccountDto accountDto) {
         return accountDto;
     }
 }

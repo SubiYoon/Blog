@@ -81,11 +81,12 @@ export default async function createConfigAsync() {
                             label: 'Who am I?',
                             position: 'left',
                         },
-                        {
-                            to: '/portfolio',
-                            label: 'Portfolio',
-                            position: 'left',
-                        },
+                        // TODO: 포트폴리오 화면 생성 후 수정해야함.
+                        // {
+                        //     to: '/portfolio',
+                        //     label: 'Portfolio',
+                        //     position: 'left',
+                        // },
                         // {
                         //     href: '/login',
                         //     label: 'Login',

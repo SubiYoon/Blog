@@ -24,6 +24,7 @@ import com.devstat.blog.domain.menu.entity.Menu;
 import com.devstat.blog.domain.menu.repository.MenuJpa;
 import com.devstat.blog.utility.GitUtil;
 import com.devstat.blog.utility.NpmUtil;
+import com.devstat.blog.utility.SecurityUtil;
 import com.devstat.blog.utility.StringUtil;
 
 import jakarta.persistence.EntityManager;
@@ -64,6 +65,8 @@ public class DocService {
     private final NpmUtil npmUtil;
 
     private final EntityManager em;
+
+    private final SecurityUtil securityUtil;
 
     // 프로젝트 단위 Map: key = 프로젝트명, value = 그 안의 폴더 및 md 파일 경로 리스트
     private Map<String, List<String>> folderTree;
@@ -384,6 +387,16 @@ public class DocService {
     }
 
     public void restartFront() {
-        npmUtil.docsRestart();
+        Boolean isApi = true;
+        npmUtil.docsRestart(isApi);
+    }
+
+    public void gitPull() {
+        AccountDto currentMember = securityUtil.getCurrentMember(new AccountDto());
+        try {
+            npmUtil.gitPull(currentMember.getAccountId());
+        } catch (Exception e) {
+            throw new CmmnException(StatusCode.DOCS_RESTART_FAIL, e);
+        }
     }
 }

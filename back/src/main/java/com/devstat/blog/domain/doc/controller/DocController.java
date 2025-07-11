@@ -58,4 +58,9 @@ public class DocController {
         return new ResponseEntity<>(StatusCode.SUCCESS, StatusCode.SUCCESS.getStatusCode());
     }
 
+    @PostMapping("/pull")
+    public ResponseEntity<StatusCode> gitPull() {
+        docService.gitPull();
+        return new ResponseEntity<>(StatusCode.SUCCESS, StatusCode.SUCCESS.getStatusCode());
+    }
 }

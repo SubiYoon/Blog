@@ -94,27 +94,38 @@ const MarkDown = () => {
 
     return (
         <Layout title="문서">
-            <div className="editor-container">
-                <ResizableSidebar>
-                    <DocsTreeSidebar
-                        treeData={docsTree}
-                        setTreeData={setDocsTree}
-                        onSelectFile={handleSelectFile}
-                    />
-                </ResizableSidebar>
-                <div className="markdown-editor-wrapper">
-                    <MarkdownEditor
-                        selectedFile={selectedFile}
-                        treeData={docsTree}
-                        setTreeData={setDocsTree}
-                        updateTreeData={(path, content) => {
-                            const updated = updateNodeContent(docsTree, path, content);
-                            setDocsTree(updated);
-                        }}
-                        onSubmit={handleSubmit}
-                    />
+            <main className="wrap">
+                <section className="menu-top">
+                    <div className="navbar-inner">
+                        <a>문서편집</a>
+                        <a>포토폴리오 편집</a>
+                        <div className="logout-box">
+                            <a>로그아웃</a>
+                        </div>
+                    </div>
+                </section>
+                <div className="editor-container">
+                    <ResizableSidebar>
+                        <DocsTreeSidebar
+                            treeData={docsTree}
+                            setTreeData={setDocsTree}
+                            onSelectFile={handleSelectFile}
+                        />
+                    </ResizableSidebar>
+                    <div className="markdown-editor-wrapper">
+                        <MarkdownEditor
+                            selectedFile={selectedFile}
+                            treeData={docsTree}
+                            setTreeData={setDocsTree}
+                            updateTreeData={(path, content) => {
+                                const updated = updateNodeContent(docsTree, path, content);
+                                setDocsTree(updated);
+                            }}
+                            onSubmit={handleSubmit}
+                        />
+                    </div>
                 </div>
-            </div>
+            </main>
         </Layout>
     );
 };

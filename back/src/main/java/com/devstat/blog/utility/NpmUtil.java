@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.devstat.blog.core.aspect.AccountDto;
 import com.devstat.blog.core.code.StatusCode;
 import com.devstat.blog.core.exception.CmmnException;
 
@@ -33,11 +34,19 @@ public class NpmUtil {
     @Value("${blog.just.path}")
     private String justExecutablePath;
 
+    private final SecurityUtil securityUtil;
+
     private static Process npmProcess; // To hold the background npm process
     private static final AtomicBoolean shutdownHookRegistered = new AtomicBoolean(false);
 
-    public void docsRestart() {
+    public void docsRestart(Boolean isApi) {
         try {
+            if (isApi) {
+                AccountDto currentMember = securityUtil.getCurrentMember(new AccountDto());
+
+                gitPull(currentMember.getAccountId());
+            }
+
             // 1️⃣ 3000 포트를 점유 중인 프로세스 강제 종료
             frontJustTask("stop", String.valueOf(TARGET_PORT));
 
