@@ -54,8 +54,6 @@ public class DocService {
     @Value("${blog.file.path}")
     private String blogFilePath;
 
-    private boolean isIncludeNewRootFolder = false;
-
     private final DocJpa docJpa;
     private final MenuJpa menuJpa;
     private final MemberJpa memberJpa;
@@ -188,11 +186,6 @@ public class DocService {
             GitUtil.gitTask(accountDto, blogFilePath, "commit", "-m", commitMessage);
             GitUtil.gitTask(accountDto, blogFilePath, "push", "origin", "main");
 
-            if (isIncludeNewRootFolder) {
-                isIncludeNewRootFolder = false;
-                return StatusCode.EXECUTE_FRONT_RESTART;
-            }
-
             return StatusCode.SUCCESS;
         } catch (Exception e) {
             // 생성된 파일 삭제
@@ -219,8 +212,6 @@ public class DocService {
                 if (!file.exists()) {
                     file.mkdirs(); // 폴더는 삭제할 필요 없음 (보통 비워지면 자동 삭제)
                     if ((boolean) docs.get("isRootFolder")) {
-                        isIncludeNewRootFolder = true;
-
                         Member findMember = memberJpa.findById(id)
                                 .orElseThrow(() -> new CmmnException(StatusCode.MEMBER_NOT_FOUND));
 
@@ -317,8 +308,6 @@ public class DocService {
                                         menuJpa.delete(menu);
                                         // em.remove(menu);
                                         // em.flush();
-
-                                        isIncludeNewRootFolder = true;
                                     }
 
                                     // em.persist(docHistory);
@@ -374,11 +363,6 @@ public class DocService {
             GitUtil.gitTask(accountDto, blogFilePath, "add", ".");
             GitUtil.gitTask(accountDto, blogFilePath, "commit", "-m", "삭제");
             GitUtil.gitTask(accountDto, blogFilePath, "push", "origin", "main");
-
-            if (isIncludeNewRootFolder) {
-                isIncludeNewRootFolder = false;
-                return StatusCode.EXECUTE_FRONT_RESTART;
-            }
 
             return StatusCode.SUCCESS;
         } catch (IOException e) {
