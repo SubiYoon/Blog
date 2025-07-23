@@ -21,15 +21,23 @@ const getFileIcon = (filename) => {
     }
 };
 
-const TreeNode = ({ node, depth = 0, onRightClick, onClick, refreshKey }) => {
-    const [isOpen, setIsOpen] = useState(false);
+const TreeNode = ({ node, depth = 0, onRightClick, onClick, refreshKey, expandedNodes, setExpandedNodes }) => {
     const isFolder = node.type === 'folder';
     const paddingLeft = `${depth * 16}px`;
+    const isOpen = expandedNodes.has(node.filePath);
 
     if (node.status === 'delete') return null;
 
     const toggle = () => {
-        if (isFolder) setIsOpen(!isOpen);
+        if (isFolder) {
+            const newExpandedNodes = new Set(expandedNodes);
+            if (isOpen) {
+                newExpandedNodes.delete(node.filePath);
+            } else {
+                newExpandedNodes.add(node.filePath);
+            }
+            setExpandedNodes(newExpandedNodes);
+        }
     };
 
     const handleContextMenu = (e) => {
@@ -66,6 +74,8 @@ const TreeNode = ({ node, depth = 0, onRightClick, onClick, refreshKey }) => {
                     onRightClick={onRightClick}
                     onClick={onClick}
                     refreshKey={refreshKey}
+                    expandedNodes={expandedNodes}
+                    setExpandedNodes={setExpandedNodes}
                 />
             ))}
         </div>

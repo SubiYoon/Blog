@@ -14,6 +14,7 @@ const MarkDown = () => {
     const history = useHistory();
     const [docsTree, setDocsTree] = useState([]);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [expandedNodes, setExpandedNodes] = useState(new Set());
 
     useEffect(() => {
         $axios.get('/doc/docsTree').then((response) => {
@@ -80,6 +81,13 @@ const MarkDown = () => {
         });
     };
 
+    const handleFileDeleted = (deletedFilePath) => {
+        // 삭제된 파일이 현재 선택된 파일과 같다면 초기화
+        if (selectedFile && selectedFile.filePath === deletedFilePath) {
+            setSelectedFile(null);
+        }
+    };
+
     const logout = () => {
         $axios.post('/logout').then(() => {
             history.push('/')
@@ -105,6 +113,9 @@ const MarkDown = () => {
                             treeData={docsTree}
                             setTreeData={setDocsTree}
                             onSelectFile={handleSelectFile}
+                            onFileDeleted={handleFileDeleted}
+                            expandedNodes={expandedNodes}
+                            setExpandedNodes={setExpandedNodes}
                         />
                     </ResizableSidebar>
                     <div className="markdown-editor-wrapper">
