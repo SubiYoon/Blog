@@ -4,9 +4,11 @@ import '../css/loginForm.css';
 import { Lock, IdCardLanyard } from 'lucide-react'
 import Layout from '@theme/Layout';
 import { $axios } from '../api'
+import { useUser } from '../store/globalStore'
 
 export default function LoginForm() {
     const history = useHistory();
+    const { loginUser } = useUser();
     const [id, setId] = useState('');
     const [alias, setAlias] = useState('');
     const [password, setPassword] = useState('');
@@ -25,6 +27,7 @@ export default function LoginForm() {
         }).then((response) => {
             setMessageColor('green')
             setMsg("로그인에 성공했습니다.")
+            loginUser(response.data.userInfo.alias)
             localStorage.setItem('DEVSTAT-JWT', 'temp-token');
             history.push('/');
         }).catch((error) => {

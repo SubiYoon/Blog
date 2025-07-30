@@ -234,9 +234,6 @@ export default function portfolioForm() {
                     <div className="navbar-inner">
                         <a>문서편집</a>
                         <a>포토폴리오 편집</a>
-                        <div className="logout-box">
-                            <a onClick={logout}>로그아웃</a>
-                        </div>
                     </div>
                 </section>
                 <section className="menu-section">

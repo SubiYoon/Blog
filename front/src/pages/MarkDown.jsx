@@ -98,15 +98,6 @@ const MarkDown = () => {
     return (
         <Layout title="문서">
             <main className="wrap">
-                <section className="menu-top">
-                    <div className="navbar-inner">
-                        <a>문서편집</a>
-                        <a>포토폴리오 편집</a>
-                        <div className="logout-box">
-                            <a onClick={logout}>로그아웃</a>
-                        </div>
-                    </div>
-                </section>
                 <div className="editor-container">
                     <ResizableSidebar>
                         <DocsTreeSidebar
