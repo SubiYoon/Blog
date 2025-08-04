@@ -11,12 +11,13 @@ export default function PortfolioProject({data}) {
         <div className="detail-wrap">
             <div className="cont-wrap">
                 <div className="cont-title">
-                    <div className="image-box">
+                    {data.logo && (
+                        <div className="image-box">
                         <img
                             src={data.logo}
-                            alt="React Logo"
+                            alt={data.name}
                         />
-                    </div>
+                    </div>)}
                     <div className="text-box">
                         <h2>{data.name}</h2>
                         <h2>{data.date}</h2>

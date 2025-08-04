@@ -6,6 +6,15 @@
     height: calc(100vh - 60px);
     box-sizing: border-box;
     position: relative;
+
+    input {
+        cursor: pointer;
+    }
+
+    input[type="radio"] {
+        accent-color: var(--ifm-color-primary-dark);
+    }
+
     .menu-top {
         position: absolute;
         top: -60px;
@@ -66,10 +75,6 @@
                 &:hover {
                     background-color: var(--ifm-color-primary-dark);
                     color: white;
-                }
-
-                input {
-                    cursor: pointer;
                 }
 
                 .cont-box {
@@ -157,6 +162,40 @@
                 overflow-y: hidden;
                 position: relative;
 
+                input, textarea {
+                    padding: 4px 12px; margin-bottom: 12px;
+                    resize: none;
+                }
+
+
+
+
+                input:focus,
+                textarea:focus,
+                select:focus {
+                    outline: none;
+                    border: 2px solid  var(--ifm-color-primary-dark);
+                }
+
+                .edit-button-box {
+                    display: flex;
+                    gap: 8px;
+                    justify-content: center;
+                    button {
+                        padding: 4px 8px;
+                        height: 30px;
+                        background-color: var(--ifm-color-primary);
+                        color: white;
+                        border: none;
+                        cursor: pointer;
+                        border-radius: 8px;
+
+                        &:hover {
+                            background-color: var(--ifm-color-primary-dark);
+                        }
+                    }
+                }
+
                 .project-nav {
                     display: flex;
                     flex-direction: column;
@@ -191,7 +230,7 @@
                             width: 100%;
                             padding: 10px;
                             font-size: 20px;
-                            text-align: center;
+                            text-align: left;
                             text-decoration: underline;
                             text-underline-offset: 8px;
 
@@ -202,9 +241,9 @@
 
                         h3 {
                             width: 100%;
-                            padding: 10px 20px;
+                            padding: 10px 30px 10px 35px;
                             font-size: 18px;
-                            text-align: right;
+                            text-align: left;
 
                             &:hover {
                                 background-color: var(--ifm-color-primary-dark);
@@ -250,6 +289,20 @@
                         flex-direction: column;
                         gap: 40px;
 
+                        .add-project-box{
+                            margin-top: auto;
+
+                            button {
+                                font-size: 16px;
+                                padding: 14px 28px;
+                                background-color: var(--ifm-color-primary);
+                                color: white;
+                                border: none;
+                                border-radius: 8px;
+                                cursor: pointer;
+                            }
+                        }
+
                         .project-block {
                             display: flex;
                             gap: 16px;
@@ -261,6 +314,7 @@
                             width: 220px;
                             padding: 10px;
                             text-align: center;
+
 
                             h2 {
                                 font-size: 22px;
@@ -280,6 +334,20 @@
                             flex-direction: column;
                             gap: 60px;
                             padding-right: 20px;
+
+                            .image-add-box {
+                                margin-left: auto;
+                                padding: 0 20px;
+                                button {
+                                    padding: 4px 8px;
+                                    height: 30px;
+                                    background-color: var(--ifm-color-primary);
+                                    color: white;
+                                    border: none;
+                                    border-radius: 8px;
+                                    cursor: pointer;
+                                }
+                            }
                         }
 
                         .project-card {
@@ -322,6 +390,15 @@
                             padding: 20px;
                             font-size: 16px;
 
+                            .project-items-title-box {
+                                display: flex;
+                                gap: 12px;
+
+                                .edit-button-box{
+                                    margin-left: auto;
+                                }
+                            }
+
                             strong {
                                 font-size: 18px;
                             }
@@ -329,6 +406,64 @@
                     }
                 }
         }
+        }
+    }
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    max-width: 500px;
+    /*width: 90%;*/
+    z-index: 1001;
+    gap: 12px;
+
+    .title-box {
+        input {
+            width: 100%;
+        }
+    }
+
+    .modal-button-box{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+        gap: 8px;
+        height: 100%;
+         width: 100%;
+
+
+        button {
+            font-size: 16px;
+            padding: 4px 12px;
+            background-color: var(--ifm-color-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+
+            /*버튼 호버 설정*/
+            &:hover {
+                background-color: var(--ifm-color-primary-dark);
+            }
         }
     }
 }

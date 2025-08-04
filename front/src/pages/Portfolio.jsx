@@ -1,11 +1,26 @@
 import Layout from '@theme/Layout'
 import '../css/portfolio.css';
 import PortfolioMenu from "../components/PortfolioMenu";
-import { useState } from "react";
+import { useEffect, useState } from 'react'
 import PortfolioProject from "../components/PortfolioProject";
-import { $axios } from '../api';
+import Modal from 'react-modal';
+import { useUser } from '../store/globalStore'
+import EditPortfolioProject from '../components/EditPortfolioProject'
+
+Modal.setAppElement('#__docusaurus');
 
 export default function portfolioForm() {
+
+    const { logoutUser, isLoggedIn } = useUser();
+
+
+    //신규 프로젝트 추가 데이터
+    const [logoFile, setLogoFile] = useState(null);
+    const [logoPreview, setLogoPreview] = useState(null);
+    const [name, setName] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+
 
     const [companyList, setCompanyList] = useState([
         {
@@ -219,42 +234,107 @@ export default function portfolioForm() {
     ]);
 
     const [selectedCompany, setSelectedCompany] = useState(companyList[0]);
+    const [isEditMode, setIsEditMode] = useState(false);
 
-    const logout = () => {
-        $axios.post('/logout').then(() => {
-            history.push('/')
-            localStorage.removeItem('DEVSTAT-JWT');
-        });
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    //취소를 대비한 상태 복사
+    const [isDetailData, setIsDetailData] = useState(companyList[0]);
+
+    function insertTitle() {
+        //여기에 신규 추가 저장 로직 추가
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('date', `${startDate} ~ ${endDate}`);
+        formData.append('file', logoFile);
     }
+
+    function deleteItem() {
+        console.log(selectedCompany);
+    }
+
+
+    useEffect(() => {
+
+        //깊은 복사 사용
+        setIsDetailData(JSON.parse(JSON.stringify(selectedCompany)));
+    }, [isEditMode])
 
     return (
         <Layout title="포트폴리오">
             <main className="wrap">
-                <section className="menu-top">
-                    <div className="navbar-inner">
-                        <a>문서편집</a>
-                        <a>포토폴리오 편집</a>
-                    </div>
-                </section>
                 <section className="menu-section">
                     <div className="menu-box">
                         {companyList.map(company => (
-                            <PortfolioMenu key={company.id} data={company} isSelected={selectedCompany?.id === company.id} onClick={() => setSelectedCompany(company)} />
+                            <PortfolioMenu key={company.id} data={company} isSelected={selectedCompany?.id === company.id} onClick={() => {setSelectedCompany(company); setIsDetailData(company);}} />
                         ))}
                     </div>
-                    <div className="button-section">
+                    {isLoggedIn() && <div className="button-section">
                         <div className="button-box">
-                            <button>삭제</button>
-                            <button>수정</button>
-                            <button>입력</button>
+                            <button onClick={() => deleteItem()}>삭제</button>
+                            {isEditMode ? (    <button onClick={()=> setIsEditMode(false)}>취소</button>) : (<button onClick={() => setIsEditMode(true)}>수정</button>)}
+                            <button onClick={() => setIsModalOpen(true)}>추가</button>
                         </div>
-                    </div>
+                    </div>}
                 </section>
                 <section className="cont-section">
                     <div className="cont-box">
-                        <PortfolioProject data={selectedCompany} />
+                        {isLoggedIn() && isEditMode ? (<EditPortfolioProject data={isDetailData}/>) : (   <PortfolioProject data={selectedCompany} />)}
                     </div>
                 </section>
+                <Modal
+                    isOpen={isModalOpen}
+                    onRequestClose={() => setIsModalOpen(false)}
+                    className="modal-content"
+                    overlayClassName="modal-overlay"
+                >
+                    {logoPreview && <img src={logoPreview} alt="미리보기" />}
+
+                    {/* 파일 첨부 */}
+                    <div>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                                const file = e.target.files[0]
+                                if (file) {
+                                    setLogoFile(file) // 실제 파일 저장
+                                    const reader = new FileReader()
+                                    reader.onloadend = () => {
+                                        setLogoPreview(reader.result) // 미리보기용
+                                    }
+                                    reader.readAsDataURL(file)
+                                }
+                            }}
+                        />
+                    </div>
+                    <div className="title-box">
+                        <input
+                            type="text"
+                            placeholder="회사명을 입력하세요."
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                    </div>
+                    <div className="date-box">
+                        <input
+                            type="date"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                        />
+
+                        <span> ~ </span>
+                        <input
+                            type="date"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                        />
+                    </div>
+                    <div className="modal-button-box">
+                        <button onClick={() => insertTitle()}>저장</button>
+                        <button onClick={() => setIsModalOpen(false)}>닫기</button>
+                    </div>
+                </Modal>
             </main>
         </Layout>
     )
