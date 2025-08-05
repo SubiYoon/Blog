@@ -33,7 +33,17 @@ public enum StatusCode {
     DOC_SELECT_FAIL(HttpStatus.NOT_FOUND, "DOC_SELECT_FAIL", "해당 문서를 찾을 수 없습니다."),
     INCLUDE_NOT_FILE_AND_FOLDER(HttpStatus.BAD_REQUEST, "INCLUDE_NOT_FILE_AND_FOLDER", "필터에는 파일과 폴더만 사용할 수 있습니다."),
     DOC_SAVE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "DOC_SAVE_FAIL", "문서 저장에 실패했습니다."),
-    DOC_DELETE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "DOC_DELETE_FAIL", "문서 삭제에 실패했습니다.");
+    DOC_DELETE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "DOC_DELETE_FAIL", "문서 삭제에 실패했습니다."),
+
+    /**
+     * Portfolio
+     */
+    LOGO_EMPTY(HttpStatus.BAD_REQUEST, "LOGO_EMPTY", "로고를 찾을 수 없습니다."),
+    LOGO_SAVE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "LOGO_SAVE_FAIL", "로고 저장에 실패했습니다."),
+    COMPANY_NOT_FOUND(HttpStatus.NO_CONTENT, "COMPANY_NOT_FOUND", "회사 정보를 찾을 수 없습니다."),
+    ITEM_NOT_FOUND(HttpStatus.NO_CONTENT, "ITEM_NOT_FOUND", "아이템 정보를 찾을 수 없습니다."),
+    IMAGE_SAVE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE_SAVE_FAIL", "이미지 저장에 실패했습니다."),
+    PROJECT_NOT_FOUND(HttpStatus.NO_CONTENT, "PROJECT_NOT_FOUND", "프로젝트 정보를 찾을 수 없습니다."),;
 
     /**
      * 커스텀해서 사용할 변수들

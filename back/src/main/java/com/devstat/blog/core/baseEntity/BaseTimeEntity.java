@@ -1,5 +1,6 @@
 package com.devstat.blog.core.baseEntity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
@@ -15,7 +16,9 @@ import java.time.LocalDateTime;
 public abstract class BaseTimeEntity {
 
     @CreatedDate
+    @Column(name = "create_date")
     protected LocalDateTime createDate;
     @LastModifiedDate
+    @Column(name = "update_date")
     protected LocalDateTime updateDate;
 }

@@ -1,11 +1,15 @@
 package com.devstat.blog.domain;
 
+import com.devstat.blog.core.aspect.AccountDto;
 import com.devstat.blog.domain.member.dto.MemberDto;
 import com.devstat.blog.domain.member.service.MemberService;
 import com.devstat.blog.domain.menu.dto.MenuDto;
 import com.devstat.blog.domain.menu.service.MenuService;
 
+import com.devstat.blog.domain.portfolio.dto.PortfolioDto;
+import com.devstat.blog.domain.portfolio.service.PortfolioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InfoController {
 
+    private final PortfolioService portfolioService;
     private final MemberService memberService;
     private final MenuService menuService;
 
@@ -39,6 +44,11 @@ public class InfoController {
     @GetMapping("/{alias}/docs")
     public ResponseEntity<List<MenuDto>> getDocsList(@PathVariable("alias") String alias) {
         return ResponseEntity.ok(menuService.getMenuList(alias));
+    }
+
+    @GetMapping("portfolio")
+    public ResponseEntity<List<PortfolioDto>> getProtfolioInfo() {
+        return new ResponseEntity<>(portfolioService.getProtfolioInfo(new AccountDto()), HttpStatus.OK);
     }
 
 }

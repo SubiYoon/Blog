@@ -5,6 +5,8 @@ blog:
     path: /Users/ABCD/Develop/Project/Blog/front
   just:
     path: /opt/homebrew/bin/just
+  portfolio:
+    path: Users/ABCD/blogTempFile/portfolio
 
 origin:
   url: http://localhost:3000
