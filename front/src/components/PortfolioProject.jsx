@@ -1,8 +1,9 @@
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
-import {useState} from "react";
+import { useState } from "react";
+import { Dot } from 'lucide-react';
 
-export default function PortfolioProject({data}) {
+export default function PortfolioProject({ data }) {
 
     const [lightboxIndex, setLightboxIndex] = useState(-1);
     const [lightboxImages, setLightboxImages] = useState([]);
@@ -13,11 +14,11 @@ export default function PortfolioProject({data}) {
                 <div className="cont-title">
                     {data.logo && (
                         <div className="image-box">
-                        <img
-                            src={data.logo}
-                            alt={data.name}
-                        />
-                    </div>)}
+                            <img
+                                src={data.logo}
+                                alt={data.name}
+                            />
+                        </div>)}
                     <div className="text-box">
                         <h2>{data.name}</h2>
                         <h2>{data.date}</h2>
@@ -43,7 +44,7 @@ export default function PortfolioProject({data}) {
                                                     setLightboxImages(item.imgs);
                                                     console.log("item.imags", item.imgs)
                                                     setLightboxIndex(k);
-                                                }}/>
+                                                }} />
                                             ))}
                                         </div>
                                     </div>
@@ -59,7 +60,7 @@ export default function PortfolioProject({data}) {
                         <div className="nav-title-box">
                             <h2 onClick={() => {
                                 const target = document.querySelector(`.block-${i}`);
-                                target?.scrollIntoView({behavior: 'smooth', block: 'start'});
+                                target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                             }}>{project.name}</h2>
                         </div>
                         {project.items.map((item, j) => (
@@ -67,7 +68,7 @@ export default function PortfolioProject({data}) {
                                 <h3 onClick={() => {
                                     const target = document.querySelector(`.card-${i}-${j}`);
                                     target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                }}>{item.title}</h3>
+                                }}>- {item.title}</h3>
                             </div>
                         ))}
                     </div>

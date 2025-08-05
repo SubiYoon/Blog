@@ -23,11 +23,12 @@
         width: 40%;
         height: 60px;
 
-        .navbar-inner{
+        .navbar-inner {
             display: flex;
             height: 100%;
             gap: 30px;
             align-items: center;
+
             a {
                 cursor: pointer;
                 color: var(--ifm-navbar-link-color);
@@ -50,6 +51,7 @@
         height: 100%;
         overflow: hidden;
         border-right: 1px solid var(--ifm-toc-border-color);
+
         .menu-box {
             display: flex;
             flex-direction: column;
@@ -58,12 +60,12 @@
             overflow: auto;
             gap: 16px;
 
-            .title-wrap.active{
+            .title-wrap.active {
                 background-color: var(--ifm-color-primary-dark);
                 color: white;
             }
 
-            .title-wrap{
+            .title-wrap {
                 display: flex;
                 align-items: center;
                 gap: 10px;
@@ -89,10 +91,11 @@
                         align-items: center;
                         padding: 8px;
 
-                        img{
+                        img {
                             object-fit: cover;
                         }
                     }
+
                     .text-box {
                         display: flex;
                         flex-direction: column;
@@ -113,7 +116,7 @@
             }
         }
 
-        .button-section{
+        .button-section {
             position: absolute;
             display: flex;
             justify-content: center;
@@ -121,7 +124,7 @@
             height: 80px;
             bottom: 0;
 
-            .button-box{
+            .button-box {
                 display: flex;
                 align-items: center;
                 width: 90%;
@@ -150,20 +153,23 @@
     .cont-section {
         width: calc(100% - var(--doc-sidebar-width));
         height: 100%;
+
         /*메뉴 패딩*/
         .cont-box {
             display: flex;
             flex-direction: column;
             height: 100%;
 
-            .detail-wrap{
+            .detail-wrap {
                 height: 100%;
                 width: 100%;
                 overflow-y: hidden;
                 position: relative;
 
-                input, textarea {
-                    padding: 4px 12px; margin-bottom: 12px;
+                input,
+                textarea {
+                    padding: 4px 12px;
+                    margin-bottom: 12px;
                     resize: none;
                 }
 
@@ -174,13 +180,14 @@
                 textarea:focus,
                 select:focus {
                     outline: none;
-                    border: 2px solid  var(--ifm-color-primary-dark);
+                    border: 2px solid var(--ifm-color-primary-dark);
                 }
 
                 .edit-button-box {
                     display: flex;
                     gap: 8px;
                     justify-content: center;
+
                     button {
                         padding: 4px 8px;
                         height: 30px;
@@ -200,7 +207,7 @@
                     display: flex;
                     flex-direction: column;
                     position: absolute;
-                    width: 200px;
+                    width: 300px;
                     max-height: calc(100vh - 130px);
                     top: 5%;
                     transform: translate(-8%, 0);
@@ -218,21 +225,23 @@
                         color: white;
                         height: 100%;
 
-                        .nav-title-box{
-                            height: 40px;
+                        .nav-title-box {
+                            height: auto;
+                            /* background-color: red; */
                         }
 
-                        .nav-cont-box{
-                            height: 30px;
+                        .nav-cont-box {
+                            height: auto;
                         }
 
                         h2 {
                             width: 100%;
-                            padding: 10px;
+                            padding: 0 10px;
                             font-size: 20px;
                             text-align: left;
                             text-decoration: underline;
                             text-underline-offset: 8px;
+                            line-height: 1.5;
 
                             &:hover {
                                 background-color: var(--ifm-color-primary-dark);
@@ -241,7 +250,7 @@
 
                         h3 {
                             width: 100%;
-                            padding: 10px 30px 10px 35px;
+                            padding: 0px 30px;
                             font-size: 18px;
                             text-align: left;
 
@@ -255,6 +264,7 @@
 
                 .cont-wrap {
                     display: flex;
+                    width: 100%;
                     height: 100%;
                     overflow-y: auto;
                     flex-direction: column;
@@ -288,8 +298,9 @@
                         display: flex;
                         flex-direction: column;
                         gap: 40px;
+                        margin-right: 300px;
 
-                        .add-project-box{
+                        .add-project-box {
                             margin-top: auto;
 
                             button {
@@ -311,7 +322,7 @@
                         .project-title {
                             display: flex;
                             flex-direction: column;
-                            width: 220px;
+                            width: 250px;
                             padding: 10px;
                             text-align: center;
 
@@ -329,7 +340,7 @@
                         }
 
                         .project-items {
-                            width: calc(100% - 220px - 200px);
+                            width: 100%;
                             display: flex;
                             flex-direction: column;
                             gap: 60px;
@@ -338,6 +349,7 @@
                             .image-add-box {
                                 margin-left: auto;
                                 padding: 0 20px;
+
                                 button {
                                     padding: 4px 8px;
                                     height: 30px;
@@ -394,7 +406,7 @@
                                 display: flex;
                                 gap: 12px;
 
-                                .edit-button-box{
+                                .edit-button-box {
                                     margin-left: auto;
                                 }
                             }
@@ -405,7 +417,7 @@
                         }
                     }
                 }
-        }
+            }
         }
     }
 }
@@ -416,7 +428,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 1000;
 }
 
@@ -441,14 +453,14 @@
         }
     }
 
-    .modal-button-box{
+    .modal-button-box {
         display: flex;
         align-items: center;
         justify-content: center;
         margin-top: 20px;
         gap: 8px;
         height: 100%;
-         width: 100%;
+        width: 100%;
 
 
         button {
