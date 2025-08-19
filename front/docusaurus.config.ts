@@ -86,16 +86,6 @@ export default async function createConfigAsync() {
                             label: 'Portfolio',
                             position: 'left',
                         },
-                        // {
-                        //     href: '/login',
-                        //     label: 'Login',
-                        //     position: 'right',
-                        // },
-                        {
-                            href: 'https://github.com/SubiYoon',
-                            label: 'GitHub',
-                            position: 'right',
-                        },
                     ],
                 },
                 // footer: {
@@ -172,6 +162,13 @@ export default async function createConfigAsync() {
                 },
             );
         })
+        config.themeConfig.navbar.items.push(
+            {
+                href: 'https://github.com/SubiYoon',
+                label: 'GitHub',
+                position: 'right',
+            }
+        )
     })
 
     return config
