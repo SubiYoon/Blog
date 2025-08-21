@@ -28,8 +28,9 @@ public class PortfolioController {
 
     @PostMapping("company")
     public ResponseEntity<StatusCode> insertCompany(
-            @ModelAttribute @Valid CompanyRequestDto dto) {
-        StatusCode result = portfolioService.insertCompany(new AccountDto(), dto);
+            @ModelAttribute @Valid CompanyRequestDto dto,
+            @RequestParam("logo") MultipartFile logo) {
+        StatusCode result = portfolioService.insertCompany(new AccountDto(), dto, logo);
         return new ResponseEntity<>(result, result.getStatusCode());
     }
 

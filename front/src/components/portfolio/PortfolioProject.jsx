@@ -84,7 +84,8 @@ export default function PortfolioProject({ data }) {
                 open={lightboxIndex >= 0}
                 close={() => setLightboxIndex(-1)}
                 index={lightboxIndex}
-                slides={lightboxImages.map(imgObj => ({ src: imgObj.img }))}
+                slides={lightboxImages.map(imgObj => ({ src: `http://localhost:8903/static${imgObj.img}` }))} //TODO: 차후 운영 배포시 주석
+                // slides={lightboxImages.map(imgObj => ({ src: `/static${imgObj.img}` }))} //TODO: 차후 운영 배포시 주석 해제
                 on={{ view: ({ index }) => setLightboxIndex(index) }}
                 render={{
                     buttonPrev: lightboxIndex > 0 ? undefined : () => null,
@@ -142,7 +143,8 @@ export default function PortfolioProject({ data }) {
                                 {lightboxImages.map((imgObj, idx) => (
                                     <img
                                         key={idx}
-                                        src={imgObj.img}
+                                        src={`http://localhost:8903/static${imgObj.img}`} //TODO: 차후 운영 배포시 주석
+                                        // src={`/static${imgObj.img}`} //TODO: 차후 운영 배포시 주석 해제
                                         onClick={() => setLightboxIndex(idx)}
                                         style={{
                                             width: '80px',

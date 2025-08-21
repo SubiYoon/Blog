@@ -2,9 +2,9 @@ import 'yet-another-react-lightbox/styles.css';
 import {useState, useEffect} from "react";
 import TextareaAutosize from 'react-textarea-autosize';
 import { $axios } from '../../api'
-import { $confirm } from '../ui/SweetAlert'
+import { $alert, $confirm } from '../ui/SweetAlert'
 
-export default function EditPortfolioProject({data}) {
+export default function EditPortfolioProject({data, onDataUpdate}) {
 
     const [projectItems, setProjectItems] = useState([]);
 
@@ -57,38 +57,6 @@ export default function EditPortfolioProject({data}) {
         }, 0);
     }
 
-    //수정 로직 및 세이브 로직
-    function saveData(data, gb) {
-        const formData = new FormData();
-
-        for (let pair of data.entries()) {
-
-            if (pair[0] === 'date') {
-                pair[1] = pair[1].replace('근무중', '');
-                pair[1] = pair[1].replace('진행중', '');
-            }
-            formData.append(pair[0], pair[1]);
-            console.log(pair[0], pair[1]);
-        }
-
-        if (formData.get('id') === 'new') {
-            $axios.post(`/portfolio/${gb}`, formData).then((response) => {
-                console.log(response);
-            });
-        } else {
-            $axios.patch(`/portfolio/${gb}/${formData.get('id')}`, formData).then((response) => {
-                console.log(response);
-            });
-        }
-    }
-
-    //삭제
-    async function deleteItem(id, gb) {
-        if (await $confirm('정말 삭제하시겠습니까?', '삭제후 되돌릴 수 없습니다.', 'question', '삭제', '취소')) {
-            $axios.delete(`/portfolio/${gb}/${id}`).then((response) => {
-            });
-        }
-    }
 
     // 이미지 자동 업로드 함수
     function uploadImageToServer(data, file, callback) {
@@ -155,11 +123,14 @@ export default function EditPortfolioProject({data}) {
                                         // 즉시 서버에 업로드
                                         uploadImageToServer(data, file, (response) => {
                                             if (response) {
-                                                setProjectItems(prev => ({
-                                                    ...prev,
+                                                const updatedData = {
+                                                    ...projectItems,
                                                     logo: response.img,      // 서버에서 반환된 이미지 경로
                                                     logoId: response.imageId, // 서버에서 반환된 이미지 ID
-                                                }))
+                                                };
+                                                setProjectItems(updatedData);
+                                                // 부모 컴포넌트에 변경사항 전달
+                                                if (onDataUpdate) onDataUpdate(updatedData);
                                             }
                                         })
                                     }
@@ -215,7 +186,35 @@ export default function EditPortfolioProject({data}) {
                                     formData.append('logoId', projectItems.logoId);
                                 }
                                 
-                                saveData(formData, 'company');
+                                // 회사 정보 저장 후 UI 즉시 업데이트
+                                if (formData.get('id') === 'new') {
+                                    formData.delete("id")
+                                    $axios.post(`/portfolio/company`, formData).then((response) => {
+                                        console.log('회사 등록 성공:', response);
+                                        // 새로 등록된 회사 ID로 업데이트
+                                        const updatedData = {
+                                            ...projectItems,
+                                            id: response.data.companyId || projectItems.id
+                                        };
+                                        setProjectItems(updatedData);
+                                        // 부모 컴포넌트에 변경사항 전달
+                                        if (onDataUpdate) onDataUpdate(updatedData);
+                                        $alert('성공', '회사 정보가 등록되었습니다.', 'success');
+                                    }).catch((error) => {
+                                        console.error('회사 등록 실패:', error);
+                                        $alert('실패', '회사 등록에 실패했습니다.', 'error');
+                                    });
+                                } else {
+                                    $axios.patch(`/portfolio/company/${formData.get('id')}`, formData).then((response) => {
+                                        console.log('회사 수정 성공:', response);
+                                        // 부모 컴포넌트에 현재 상태 전달
+                                        if (onDataUpdate) onDataUpdate(projectItems);
+                                        $alert('성공', '회사 정보가 수정되었습니다.', 'success');
+                                    }).catch((error) => {
+                                        console.error('회사 수정 실패:', error);
+                                        $alert('실패', '회사 수정에 실패했습니다.', 'error');
+                                    });
+                                }
 
                             }}>저장</button>
                         </div>
@@ -263,11 +262,48 @@ export default function EditPortfolioProject({data}) {
                                         formData.append('companyId', project.companyId)
                                         formData.append('projectName', project.name)
                                         formData.append('date', project.date)
-                                        saveData(formData, 'project')
+                                        
+                                        // 프로젝트 저장 후 UI 즉시 업데이트
+                                        if (formData.get('id') === 'new') {
+                                            $axios.post(`/portfolio/project`, formData).then((response) => {
+                                                console.log('프로젝트 등록 성공:', response);
+                                                // 새로 등록된 프로젝트 ID로 업데이트
+                                                const updated = [...projectItems.projects]
+                                                updated[i].id = response.data.projectId || updated[i].id;
+                                                setProjectItems({ ...projectItems, projects: updated });
+                                                $alert('성공', '프로젝트가 등록되었습니다.', 'success');
+                                            }).catch((error) => {
+                                                console.error('프로젝트 등록 실패:', error);
+                                                $alert('실패', '프로젝트 등록에 실패했습니다.', 'error');
+                                            });
+                                        } else {
+                                            $axios.patch(`/portfolio/project/${formData.get('id')}`, formData).then((response) => {
+                                                console.log('프로젝트 수정 성공:', response);
+                                                // UI는 이미 사용자 입력으로 업데이트되어 있으므로 추가 작업 불필요
+                                                $alert('성공', '프로젝트가 수정되었습니다.', 'success');
+                                            }).catch((error) => {
+                                                console.error('프로젝트 수정 실패:', error);
+                                                $alert('실패', '프로젝트 수정에 실패했습니다.', 'error');
+                                            });
+                                        }
 
                                     }}>저장
                                     </button>
-                                    <button onClick={() => deleteItem(project.id, 'project')}>삭제</button>
+                                    <button onClick={async () => {
+                                        if (await $confirm('정말 삭제하시겠습니까?', '삭제후 되돌릴 수 없습니다.', 'question', '삭제', '취소')) {
+                                            $axios.delete(`/portfolio/project/${project.id}`).then((response) => {
+                                                console.log('프로젝트 삭제 성공:', response);
+                                                // UI에서 해당 프로젝트 즉시 제거
+                                                const updated = [...projectItems.projects]
+                                                updated.splice(i, 1);
+                                                setProjectItems({ ...projectItems, projects: updated });
+                                                $alert('성공', '프로젝트가 삭제되었습니다.', 'success');
+                                            }).catch((error) => {
+                                                console.error('프로젝트 삭제 실패:', error);
+                                                $alert('실패', '프로젝트 삭제에 실패했습니다.', 'error');
+                                            });
+                                        }
+                                    }}>삭제</button>
                                 </div>
                             </div>
 
@@ -288,29 +324,54 @@ export default function EditPortfolioProject({data}) {
                                                 <div className="edit-button-box">
                                                     <button onClick={() => {
                                                         const formData = new FormData()
-                                                        if (projectItems?.logoFile) {
-                                                            formData.append('logo', projectItems.logoFile)
-                                                        }
                                                         formData.append('id', item.id)
                                                         formData.append('projectId', item.projectId)
                                                         formData.append('title', item.title)
                                                         formData.append('cont', item.cont)
 
-                                                        // 이미지들은 이미 서버에 업로드되었으므로 경로만 전송
-                                                        const imagePaths = item.imgs
-                                                            .filter(imgObj => imgObj.uploaded)
-                                                            .map(imgObj => imgObj.img)
-                                                            .join(',')
-
-                                                        if (imagePaths) {
-                                                            formData.append('imagePaths', imagePaths)
+                                                        // 아이템 저장 후 UI 즉시 업데이트
+                                                        if (formData.get('id') === 'new') {
+                                                            formData.delete("id")
+                                                            $axios.post(`/portfolio/item`, formData).then(async (response) => {
+                                                                console.log('아이템 등록 성공:', response);
+                                                                // 새로 등록된 아이템 ID로 업데이트
+                                                                const updated = [...projectItems.projects]
+                                                                updated[i].items[j].id = response.data.itemId || updated[i].items[j].id;
+                                                                setProjectItems({ ...projectItems, projects: updated });
+                                                                await $alert('성공', '기능이 등록되었습니다.', 'success');
+                                                                window.location.reload();
+                                                            }).catch((error) => {
+                                                                console.error('아이템 등록 실패:', error);
+                                                                $alert('실패', '기능 등록에 실패했습니다.', 'error');
+                                                            });
+                                                        } else {
+                                                            $axios.patch(`/portfolio/item/${formData.get('id')}`, formData).then((response) => {
+                                                                console.log('아이템 수정 성공:', response);
+                                                                // UI는 이미 사용자 입력으로 업데이트되어 있으므로 추가 작업 불필요
+                                                                $alert('성공', '기능이 수정되었습니다.', 'success');
+                                                            }).catch((error) => {
+                                                                console.error('아이템 수정 실패:', error);
+                                                                $alert('실패', '기능 수정에 실패했습니다.', 'error');
+                                                            });
                                                         }
-
-                                                        saveData(formData, 'item')
 
                                                     }}>기능 저장
                                                     </button>
-                                                    <button onClick={() => deleteItem(item.id, 'item')}>기능 삭제</button>
+                                                    <button onClick={async () => {
+                                                        if (await $confirm('정말 삭제하시겠습니까?', '삭제후 되돌릴 수 없습니다.', 'question', '삭제', '취소')) {
+                                                            $axios.delete(`/portfolio/item/${item.id}`).then((response) => {
+                                                                console.log('아이템 삭제 성공:', response);
+                                                                // UI에서 해당 아이템 즉시 제거
+                                                                const updated = [...projectItems.projects]
+                                                                updated[i].items.splice(j, 1);
+                                                                setProjectItems({ ...projectItems, projects: updated });
+                                                                $alert('성공', '기능이 삭제되었습니다.', 'success');
+                                                            }).catch((error) => {
+                                                                console.error('아이템 삭제 실패:', error);
+                                                                $alert('실패', '기능 삭제에 실패했습니다.', 'error');
+                                                            });
+                                                        }
+                                                    }}>기능 삭제</button>
                                                 </div>
                                             </div>
                                             <TextareaAutosize
@@ -379,7 +440,7 @@ export default function EditPortfolioProject({data}) {
                                                                             updated[i].items[j].imgs.splice(k, 1)
                                                                             setProjectItems({ ...projectItems, projects: updated })
                                                                         } else {
-                                                                            alert('이미지 삭제에 실패했습니다.')
+                                                                            $alert('실패', '이미지 삭제에 실패했습니다.', 'error')
                                                                         }
                                                                     })
                                                                 } else {

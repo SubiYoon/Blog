@@ -56,7 +56,7 @@ public class PortfolioService {
 
     @InjectAccountInfo
     @Transactional(readOnly = false)
-    public StatusCode insertCompany(AccountDto accountDto, CompanyRequestDto dto) {
+    public StatusCode insertCompany(AccountDto accountDto, CompanyRequestDto dto, MultipartFile logo) {
         String[] split = dto.getDate().split(" ~ ");
 
         LocalDate companyIn = LocalDate.parse(split[0]);
@@ -68,6 +68,21 @@ public class PortfolioService {
 
         Company company = Company.of(dto.getCompanyName(), companyIn, companyOut);
         companyJpa.save(company);
+
+        Path path = Paths.get(blogPortfolioPath, accountDto.getAccountId(), company.getId() + "_" + ContentCode.COMPANY, logo.getOriginalFilename());
+
+        try {
+            if (!path.getParent().toFile().exists()) {
+                path.getParent().toFile().mkdirs();
+            }
+
+            logo.transferTo(path.toFile());
+        } catch (IOException e) {
+            throw new CmmnException(StatusCode.IMAGE_SAVE_FAIL);
+        }
+
+        Image saveImage = Image.of(company.getId(), ContentCode.COMPANY, path.toString());
+        imageJpa.save(saveImage);
 
         return StatusCode.SUCCESS;
     }

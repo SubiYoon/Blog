@@ -91,6 +91,23 @@ export default function portfolioForm() {
         ];
     };
 
+    // EditPortfolioProject에서 데이터가 변경될 때 호출되는 콜백 함수
+    const handleDataUpdate = (updatedData) => {
+        // companyList에서 해당 회사 데이터 업데이트
+        const updatedCompanyList = companyList.map(company => 
+            company.id === updatedData.id ? updatedData : company
+        );
+        setCompanyList(updatedCompanyList);
+        
+        // 현재 선택된 회사가 업데이트된 회사라면 selectedCompany도 업데이트
+        if (selectedCompany && selectedCompany.id === updatedData.id) {
+            setSelectedCompany(updatedData);
+        }
+        
+        // isDetailData도 업데이트
+        setIsDetailData(updatedData);
+    };
+
     // 포트폴리오 데이터 가져오기
     const fetchPortfolioData = async () => {
         try {
@@ -162,10 +179,12 @@ export default function portfolioForm() {
 
     useEffect(() => {
         if (selectedCompany) {
-            //깊은 복사 사용
-            setIsDetailData(JSON.parse(JSON.stringify(selectedCompany)));
+            //깊은 복사 사용 - 편집 모드 시작할 때만 복사
+            if (isEditMode) {
+                setIsDetailData(JSON.parse(JSON.stringify(selectedCompany)));
+            }
         }
-    }, [isEditMode, selectedCompany])
+    }, [selectedCompany]) // isEditMode를 의존성에서 제거
 
     // 로딩 중이면 로딩 메시지 표시
     if (loading) {
@@ -199,7 +218,7 @@ export default function portfolioForm() {
                 </section>
                 <section className="cont-section">
                     <div className="cont-box">
-                        {isLoggedIn() && isEditMode ? (<EditPortfolioProject data={isDetailData} />) : (<PortfolioProject data={selectedCompany} />)}
+                        {isLoggedIn() && isEditMode ? (<EditPortfolioProject data={isDetailData} onDataUpdate={handleDataUpdate} />) : (<PortfolioProject data={selectedCompany} />)}
                     </div>
                 </section>
                 <Modal
