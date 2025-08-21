@@ -37,9 +37,10 @@ export default function portfolioForm() {
 
     // 백엔드 데이터를 프론트엔드 형식으로 변환
     const transformPortfolioData = (backendData) => {
-        return backendData.map(company => ({
+        return backendData.length > 0 ? backendData.map(company => ({
             id: company.companyId,
             name: company.name,
+            logoId: company.logoId,
             logo: company.logo,
             date: company.date,
             projects: company.projectList?.map(project => ({
@@ -53,18 +54,55 @@ export default function portfolioForm() {
                     title: item.name,
                     cont: item.cont,
                     imgs: item.imageList?.map(image => ({
+                        id: image.imageId,
                         img: image.img
                     })) || []
                 })) || []
             })) || []
-        }));
+        })) : [
+            {
+                id: 0,
+                name: '',
+                logo: '',
+                date: '',
+                projects: [
+                    {
+                        id: 0,
+                        companyId: 0,
+                        name: '',
+                        date: '',
+                        items: [
+                            {
+                                id: 0,
+                                projectId: 0,
+                                title: '',
+                                cont: '',
+                                imgs: [
+                                    {
+                                        id: 0,
+                                        img: ''
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ];
     };
 
     // 포트폴리오 데이터 가져오기
     const fetchPortfolioData = async () => {
         try {
             setLoading(true);
-            const response = await $axios.get('/info/portfolio');
+            var response;
+            const alias = localStorage.getItem("USER_ALIAS");
+            if (alias !== null && alias !== undefined) {
+                response = await $axios.get('/portfolio');
+            } else {
+                const split = window.location.href.split('#')
+                response = await $axios.get('/info/portfolio/' + split[split.length - 1]);
+            }
             const transformedData = transformPortfolioData(response.data);
             setCompanyList(transformedData);
 

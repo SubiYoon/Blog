@@ -5,10 +5,7 @@ import com.devstat.blog.core.aspect.AccountDto;
 import com.devstat.blog.core.code.StatusCode;
 import com.devstat.blog.core.exception.CmmnException;
 import com.devstat.blog.domain.portfolio.code.ContentCode;
-import com.devstat.blog.domain.portfolio.dto.CompanyRequestDto;
-import com.devstat.blog.domain.portfolio.dto.ItemRequestDto;
-import com.devstat.blog.domain.portfolio.dto.PortfolioDto;
-import com.devstat.blog.domain.portfolio.dto.ProjectRequestDto;
+import com.devstat.blog.domain.portfolio.dto.*;
 import com.devstat.blog.domain.portfolio.entity.Company;
 import com.devstat.blog.domain.portfolio.entity.Image;
 import com.devstat.blog.domain.portfolio.entity.Item;
@@ -22,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -47,31 +45,18 @@ public class PortfolioService {
     /**
      * 포트폴리오 전체 정보 조회 (계층적 구조)
      */
-    public List<PortfolioDto> getProtfolioInfo(AccountDto accountDto) {
+    public List<PortfolioDto> getPortfolioInfo(String alias) {
+        return portfolioQueryRepository.findCompletePortfolioData(alias);
+    }
+
+    @InjectAccountInfo
+    public List<PortfolioDto> getPortfolioInfo(AccountDto accountDto) {
         return portfolioQueryRepository.findCompletePortfolioData(accountDto);
     }
 
     @InjectAccountInfo
     @Transactional(readOnly = false)
-    public StatusCode insertCompany(AccountDto accountDto, CompanyRequestDto dto, MultipartFile logo) {
-
-        if (ItemCheck.isEmpty(logo)) {
-            return StatusCode.LOGO_EMPTY;
-        }
-
-        Path path = Paths.get(blogPortfolioPath, accountDto.getAccountId(), logo.getOriginalFilename());
-
-        try {
-            File parent = path.getParent().toFile();
-            if (!parent.exists()) {
-                parent.mkdirs();
-            }
-
-            logo.transferTo(path.toFile());
-        } catch (Exception e) {
-            return StatusCode.LOGO_SAVE_FAIL;
-        }
-
+    public StatusCode insertCompany(AccountDto accountDto, CompanyRequestDto dto) {
         String[] split = dto.getDate().split(" ~ ");
 
         LocalDate companyIn = LocalDate.parse(split[0]);
@@ -81,8 +66,7 @@ public class PortfolioService {
             companyOut = LocalDate.parse(split[1]);
         }
 
-        Company company = Company.of(dto.getCompanyName(), path.toString(), companyIn, companyOut);
-
+        Company company = Company.of(dto.getCompanyName(), companyIn, companyOut);
         companyJpa.save(company);
 
         return StatusCode.SUCCESS;
@@ -90,7 +74,7 @@ public class PortfolioService {
 
     @InjectAccountInfo
     @Transactional(readOnly = false)
-    public StatusCode updateCompany(AccountDto accountDto, Long id, CompanyRequestDto dto, MultipartFile logo) {
+    public StatusCode updateCompany(AccountDto accountDto, Long id, CompanyRequestDto dto) {
 
         Company findCompany = companyJpa.findById(id, accountDto.getAccountId())
                 .orElseThrow(() -> new CmmnException(StatusCode.COMPANY_NOT_FOUND));
@@ -104,28 +88,9 @@ public class PortfolioService {
             companyOut = LocalDate.parse(split[1]);
         }
 
-        if (ItemCheck.isEmpty(logo)) {
-            findCompany.update(dto.getCompanyName(), companyIn, companyOut);
-        } else {
-            File file = new File(findCompany.getCompanyLogoPath());
-
-            if (file.exists()) {
-                file.delete();
-            }
-
-            Path path = Paths.get(blogPortfolioPath, accountDto.getAccountId(), logo.getOriginalFilename());
-
-            try {
-                logo.transferTo(path.toFile());
-            } catch (Exception e) {
-                throw new CmmnException(StatusCode.LOGO_SAVE_FAIL);
-            }
-
-            findCompany.update(dto.getCompanyName(), path.toString(), companyIn, companyOut);
-        }
+        findCompany.update(dto.getCompanyName(), companyIn, companyOut);
 
         return StatusCode.SUCCESS;
-
     }
 
     @InjectAccountInfo
@@ -143,41 +108,24 @@ public class PortfolioService {
 
     @InjectAccountInfo
     @Transactional(readOnly = false)
-    public StatusCode insertItem(AccountDto accountDto, ItemRequestDto dto, List<MultipartFile> images) {
+    public StatusCode insertItem(AccountDto accountDto, ItemRequestDto dto) {
         Project findProject = projectJpa.findById(dto.getProjectId(), accountDto.getAccountId()).orElseThrow(() -> new CmmnException(StatusCode.PROJECT_NOT_FOUND));
 
 
         Item item = Item.of(findProject, dto.getTitle(), dto.getCont());
         itemJpa.save(item);
 
-        if (images != null && !images.isEmpty()) {
-            saveItemImages(item.getId(), images);
-        }
-
         return StatusCode.SUCCESS;
     }
 
     @InjectAccountInfo
     @Transactional(readOnly = false)
-    public StatusCode updateItem(AccountDto accountDto, Long id, ItemRequestDto dto, List<MultipartFile> images) {
+    public StatusCode updateItem(AccountDto accountDto, Long id, ItemRequestDto dto) {
 
         Item findItem = itemJpa.findById(id, accountDto.getAccountId())
                 .orElseThrow(() -> new CmmnException(StatusCode.ITEM_NOT_FOUND));
 
         findItem.update(dto.getTitle(), dto.getCont());
-
-        if (images != null && !images.isEmpty()) {
-            List<Image> existingImages = imageJpa.findByContentIdAndContentGb(id, ContentCode.ITEM,
-                    accountDto.getAccountId());
-            for (Image image : existingImages) {
-                File file = new File(image.getImagePath());
-                if (file.exists()) {
-                    file.delete();
-                }
-            }
-            imageJpa.deleteAll(existingImages);
-            saveItemImages(id, images);
-        }
 
         return StatusCode.SUCCESS;
     }
@@ -257,19 +205,39 @@ public class PortfolioService {
         return StatusCode.SUCCESS;
     }
 
-    private void saveItemImages(Long itemId, List<MultipartFile> images) {
-        for (MultipartFile imageFile : images) {
-            if (!ItemCheck.isEmpty(imageFile)) {
-                Path path = Paths.get(blogPortfolioPath, imageFile.getOriginalFilename());
-                try {
-                    imageFile.transferTo(path.toFile());
-                    Image image = Image.of(itemId, ContentCode.ITEM, path.toString());
-                    imageJpa.save(image);
-                } catch (Exception e) {
-                    throw new CmmnException(StatusCode.IMAGE_SAVE_FAIL);
-                }
+    @Transactional
+    @InjectAccountInfo
+    public ImageDto saveItemImages(AccountDto accountDto, Long contentId, String contentGb, MultipartFile image) {
+        Path path = Paths.get(blogPortfolioPath, accountDto.getAccountId(), contentId + "_" + contentGb, image.getOriginalFilename());
+
+        try {
+            if (!path.getParent().toFile().exists()) {
+                path.getParent().toFile().mkdirs();
             }
+
+            image.transferTo(path.toFile());
+        } catch (IOException e) {
+            throw new CmmnException(StatusCode.IMAGE_SAVE_FAIL);
         }
+
+        Image saveImage = Image.of(contentId, ContentCode.valueOf(contentGb), path.toString());
+        imageJpa.save(saveImage);
+
+        ImageDto imageDto = new ImageDto();
+        imageDto.setImageId(saveImage.getId());
+        imageDto.setItemId(saveImage.getContentId());
+        imageDto.setImg(saveImage.getImagePath());
+
+        return imageDto;
     }
 
+    @Transactional
+    @InjectAccountInfo
+    public StatusCode deleteImage(AccountDto accountDto, Long id) {
+        Image findImage = imageJpa.findById(id, accountDto.getAccountId()).orElseThrow(() -> new CmmnException(StatusCode.IMAGE_NOT_FOUND));
+
+        imageJpa.delete(findImage);
+
+        return StatusCode.SUCCESS;
+    }
 }

@@ -39,10 +39,10 @@ public class AnnotationAop {
                 dto.setAccountName(member.getName());
                 dto.setAccountRole(member.getRole());
             } else {
-                log.warn("Member is null, unable to inject account info");
+                log.warn("Member is null or not found in authentication, unable to inject account info");
             }
         } else {
-            log.warn("The argument is not of type Map<String, Object>, unable to inject account info");
+            log.warn("The argument is not of type AccountDto, unable to inject account info");
         }
         return joinPoint.proceed();
     }

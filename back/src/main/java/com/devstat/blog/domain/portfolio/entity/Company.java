@@ -26,8 +26,6 @@ public class Company extends BaseEntity {
     @Column(name = "company_name")
     private String companyName;
 
-    @Column(name = "company_logo_path")
-    private String companyLogoPath;
 
     @Column(name = "company_in")
     private LocalDate companyIn;
@@ -41,20 +39,12 @@ public class Company extends BaseEntity {
     @Column(name = "delete_yn")
     private String deleteYn;
 
-    public static Company of(String companyName, String companyLogoPath, LocalDate companyIn, LocalDate companyOut) {
+    public static Company of(String companyName, LocalDate companyIn, LocalDate companyOut) {
         Company company = new Company();
         company.companyName = companyName;
-        company.companyLogoPath = companyLogoPath;
         company.companyIn = companyIn;
         company.companyOut = companyOut;
         return company;
-    }
-
-    public void update(String companyName, String companyLogoPath, LocalDate companyIn, LocalDate companyOut) {
-        this.companyName = companyName;
-        this.companyLogoPath = companyLogoPath;
-        this.companyIn = companyIn;
-        this.companyOut = companyOut;
     }
 
     public void update(String companyName, LocalDate companyIn, LocalDate companyOut) {

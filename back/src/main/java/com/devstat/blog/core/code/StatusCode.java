@@ -43,7 +43,8 @@ public enum StatusCode {
     COMPANY_NOT_FOUND(HttpStatus.NO_CONTENT, "COMPANY_NOT_FOUND", "회사 정보를 찾을 수 없습니다."),
     ITEM_NOT_FOUND(HttpStatus.NO_CONTENT, "ITEM_NOT_FOUND", "아이템 정보를 찾을 수 없습니다."),
     IMAGE_SAVE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "IMAGE_SAVE_FAIL", "이미지 저장에 실패했습니다."),
-    PROJECT_NOT_FOUND(HttpStatus.NO_CONTENT, "PROJECT_NOT_FOUND", "프로젝트 정보를 찾을 수 없습니다."),;
+    PROJECT_NOT_FOUND(HttpStatus.NO_CONTENT, "PROJECT_NOT_FOUND", "프로젝트 정보를 찾을 수 없습니다."),
+    IMAGE_NOT_FOUND(HttpStatus.NO_CONTENT, "IMAGE_NOT_FOUND", "이미지 정보를 찾을 수 없습니다."), ;
 
     /**
      * 커스텀해서 사용할 변수들

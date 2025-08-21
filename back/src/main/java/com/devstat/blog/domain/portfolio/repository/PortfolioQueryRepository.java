@@ -1,5 +1,6 @@
 package com.devstat.blog.domain.portfolio.repository;
 
+import com.devstat.blog.core.annotation.InjectAccountInfo;
 import com.devstat.blog.core.aspect.AccountDto;
 import com.devstat.blog.domain.portfolio.code.ContentCode;
 import com.devstat.blog.domain.portfolio.dto.*;
@@ -31,19 +32,18 @@ public class PortfolioQueryRepository {
      * 포트폴리오 전체 데이터를 계층적으로 조회
      * Company -> Project -> Item -> Image 순으로 조회하여 중첩 구조로 반환
      */
-    public List<PortfolioDto> findCompletePortfolioData(AccountDto accountDto) {
+    public List<PortfolioDto> findCompletePortfolioData(String alias) {
         // 1. Company 조회
         List<PortfolioDto> companies = query
                 .select(new QPortfolioDto(
                         company.id.as("companyId"),
                         company.companyName.as("name"),
-                        company.companyLogoPath.as("logo"),
                         company.companyIn.as("companyIn"),
                         company.companyOut.as("companyOut")))
                 .from(company)
                 .where(
                         company.deleteYn.isNull().or(company.deleteYn.ne("Y")),
-                        company.createBy.eq(accountDto.getAccountId()))
+                        company.createBy.eq(alias))
                 .orderBy(company.companyIn.asc())
                 .fetch();
 
@@ -55,6 +55,36 @@ public class PortfolioQueryRepository {
         List<Long> companyIds = companies.stream()
                 .map(PortfolioDto::getCompanyId)
                 .collect(Collectors.toList());
+
+        // Company 로고 이미지 조회
+        List<ImageDto> companyLogos = query
+                .select(Projections.bean(ImageDto.class,
+                        image.id.as("imageId"),
+                        image.contentId.as("itemId"),
+                        image.imagePath.as("img")))
+                .from(image)
+                .where(image.contentId.in(companyIds)
+                        .and(image.contentGb.eq(ContentCode.COMPANY))
+                        .and(image.deleteYn.isNull().or(image.deleteYn.ne("Y")))
+                        .and(image.createBy.eq(alias)))
+                .fetch();
+
+        // Company별로 로고 매핑 (ID와 경로)
+        Map<Long, ImageDto> logosByCompany = companyLogos.stream()
+                .collect(Collectors.toMap(
+                        img -> (Long) img.getItemId(),
+                        img -> img,
+                        (existing, replacement) -> existing
+                ));
+
+        // Company에 로고 정보 설정
+        companies.forEach(companyDto -> {
+            ImageDto logoImage = logosByCompany.get(companyDto.getCompanyId());
+            if (logoImage != null) {
+                companyDto.setLogo(logoImage.getImg());
+                companyDto.setLogoId(logoImage.getImageId());
+            }
+        });
 
         // 2. Project 조회 (Company와 연관)
         List<ProjectDto> projects = query
@@ -69,7 +99,7 @@ public class PortfolioQueryRepository {
                         project.company.id.in(companyIds)
                         .and(project.deleteYn.isNull()
                                 .or(project.deleteYn.ne("Y"))),
-                        project.createBy.eq(accountDto.getAccountId()))
+                        project.createBy.eq(alias))
                 .orderBy(project.projectStart.asc())
                 .fetch();
 
@@ -95,7 +125,7 @@ public class PortfolioQueryRepository {
                             item.project.id.in(projectIds)
                             .and(item.deleteYn.isNull()
                                     .or(item.deleteYn.ne("Y"))),
-                            item.createBy.eq(accountDto.getAccountId()))
+                            item.createBy.eq(alias))
                     .orderBy(item.id.asc())
                     .fetch();
 
@@ -112,6 +142,159 @@ public class PortfolioQueryRepository {
                 // 4. Image 조회 (Item과 연관)
                 List<ImageDto> images = query
                         .select(Projections.bean(ImageDto.class,
+                                image.id.as("imageId"),
+                                image.contentId.as("itemId"),
+                                image.imagePath.as("img")))
+                        .from(image)
+                        .where(image.contentId.in(itemIds)
+                                .and(image.contentGb.eq(ContentCode.ITEM))
+                                .and(image.deleteYn.isNull().or(image.deleteYn.ne("Y")))
+                                .and(image.createBy.eq(alias)))
+                        .orderBy(image.id.asc())
+                        .fetch();
+
+                // Image를 Item별로 그룹핑
+                Map<Long, List<ImageDto>> imagesByItem = images.stream()
+                        .collect(Collectors.groupingBy(img -> (Long) img.getItemId()));
+
+                // Item에 Image 매핑
+                items.forEach(itemDto -> {
+                    List<ImageDto> itemImages = imagesByItem.getOrDefault(itemDto.getItemId(), List.of());
+                    itemDto.setImageList(itemImages);
+                });
+            }
+
+            // Project에 Item 매핑
+            projects.forEach(projectDto -> {
+                List<ItemDto> projectItems = itemsByProject.getOrDefault(projectDto.getProjectId(), List.of());
+                projectDto.setItemList(projectItems);
+            });
+        }
+
+        // Company에 Project 매핑
+        companies.forEach(companyDto -> {
+            List<ProjectDto> companyProjects = projectsByCompany.getOrDefault(companyDto.getCompanyId(), List.of());
+            companyDto.setProjectList(companyProjects);
+        });
+
+        return companies;
+    }
+
+    /**
+     * 포트폴리오 전체 데이터를 계층적으로 조회
+     * Company -> Project -> Item -> Image 순으로 조회하여 중첩 구조로 반환
+     */
+    public List<PortfolioDto> findCompletePortfolioData(AccountDto accountDto) {
+        // 1. Company 조회
+        List<PortfolioDto> companies = query
+                .select(new QPortfolioDto(
+                        company.id.as("companyId"),
+                        company.companyName.as("name"),
+                        company.companyIn.as("companyIn"),
+                        company.companyOut.as("companyOut")))
+                .from(company)
+                .where(
+                        company.deleteYn.isNull().or(company.deleteYn.ne("Y")),
+                        company.createBy.eq(accountDto.getAccountId()))
+                .orderBy(company.companyIn.asc())
+                .fetch();
+
+        if (companies.isEmpty()) {
+            return companies;
+        }
+
+        // Company ID 목록 추출
+        List<Long> companyIds = companies.stream()
+                .map(PortfolioDto::getCompanyId)
+                .collect(Collectors.toList());
+
+        // Company 로고 이미지 조회
+        List<ImageDto> companyLogos = query
+                .select(Projections.bean(ImageDto.class,
+                        image.id.as("imageId"),
+                        image.contentId.as("itemId"),
+                        image.imagePath.as("img")))
+                .from(image)
+                .where(image.contentId.in(companyIds)
+                        .and(image.contentGb.eq(ContentCode.COMPANY))
+                        .and(image.deleteYn.isNull().or(image.deleteYn.ne("Y")))
+                        .and(image.createBy.eq(accountDto.getAccountId())))
+                .fetch();
+
+        // Company별로 로고 매핑 (ID와 경로)
+        Map<Long, ImageDto> logosByCompany = companyLogos.stream()
+                .collect(Collectors.toMap(
+                        img -> (Long) img.getItemId(),
+                        img -> img,
+                        (existing, replacement) -> existing
+                ));
+
+        // Company에 로고 정보 설정
+        companies.forEach(companyDto -> {
+            ImageDto logoImage = logosByCompany.get(companyDto.getCompanyId());
+            if (logoImage != null) {
+                companyDto.setLogo(logoImage.getImg());
+                companyDto.setLogoId(logoImage.getImageId());
+            }
+        });
+
+        // 2. Project 조회 (Company와 연관)
+        List<ProjectDto> projects = query
+                .select(new QProjectDto(
+                        project.id.as("projectId"),
+                        project.company.id.as("companyId"),
+                        project.projectName.as("name"),
+                        project.projectStart.as("projectStart"),
+                        project.projectEnd.as("projectEnd")))
+                .from(project)
+                .where(
+                        project.company.id.in(companyIds)
+                                .and(project.deleteYn.isNull()
+                                        .or(project.deleteYn.ne("Y"))),
+                        project.createBy.eq(accountDto.getAccountId()))
+                .orderBy(project.projectStart.asc())
+                .fetch();
+
+        // Project를 Company별로 그룹핑
+        Map<Long, List<ProjectDto>> projectsByCompany = projects.stream()
+                .collect(Collectors.groupingBy(p -> (Long) p.getCompanyId()));
+
+        if (!projects.isEmpty()) {
+            // Project ID 목록 추출
+            List<Long> projectIds = projects.stream()
+                    .map(ProjectDto::getProjectId)
+                    .collect(Collectors.toList());
+
+            // 3. Item 조회 (Project와 연관)
+            List<ItemDto> items = query
+                    .select(Projections.bean(ItemDto.class,
+                            item.id.as("itemId"),
+                            item.project.id.as("projectId"),
+                            item.title.as("name"),
+                            item.cont))
+                    .from(item)
+                    .where(
+                            item.project.id.in(projectIds)
+                                    .and(item.deleteYn.isNull()
+                                            .or(item.deleteYn.ne("Y"))),
+                            item.createBy.eq(accountDto.getAccountId()))
+                    .orderBy(item.id.asc())
+                    .fetch();
+
+            // Item을 Project별로 그룹핑
+            Map<Long, List<ItemDto>> itemsByProject = items.stream()
+                    .collect(Collectors.groupingBy(i -> (Long) i.getProjectId()));
+
+            if (!items.isEmpty()) {
+                // Item ID 목록 추출
+                List<Long> itemIds = items.stream()
+                        .map(ItemDto::getItemId)
+                        .collect(Collectors.toList());
+
+                // 4. Image 조회 (Item과 연관)
+                List<ImageDto> images = query
+                        .select(new QImageDto(
+                                image.id.as("imageId"),
                                 image.contentId.as("itemId"),
                                 image.imagePath.as("img")))
                         .from(image)

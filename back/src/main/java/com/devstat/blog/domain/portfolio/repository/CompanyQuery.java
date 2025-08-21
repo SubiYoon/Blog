@@ -31,17 +31,57 @@ public class CompanyQuery {
     private final QImage image = QImage.image;
     
     public List<PortfolioDto> findPortfolioInfo() {
-        return query
+        // 1. Company 기본 정보 조회
+        List<PortfolioDto> companies = query
             .select(Projections.bean(PortfolioDto.class,
                 company.id.as("companyId"),
                 company.companyName.as("name"),
-                company.companyLogoPath.as("logo"),
                 company.companyIn.stringValue().concat(" ~ ").concat(company.companyOut.stringValue()).as("date")
             ))
             .from(company)
             .where(company.deleteYn.isNull().or(company.deleteYn.ne("Y")))
             .orderBy(company.companyIn.asc())
             .fetch();
+
+        if (companies.isEmpty()) {
+            return companies;
+        }
+
+        // 2. Company ID 목록 추출
+        List<Long> companyIds = companies.stream()
+                .map(PortfolioDto::getCompanyId)
+                .collect(java.util.stream.Collectors.toList());
+
+        // 3. Company 로고 이미지 조회
+        List<ImageDto> companyLogos = query
+                .select(Projections.bean(ImageDto.class,
+                        image.id.as("imageId"),
+                        image.contentId.as("itemId"),
+                        image.imagePath.as("img")))
+                .from(image)
+                .where(image.contentId.in(companyIds)
+                        .and(image.contentGb.eq(ContentCode.COMPANY))
+                        .and(image.deleteYn.isNull().or(image.deleteYn.ne("Y"))))
+                .fetch();
+
+        // 4. Company별로 로고 매핑 (ID와 경로)
+        java.util.Map<Long, ImageDto> logosByCompany = companyLogos.stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        img -> (Long) img.getItemId(),
+                        img -> img,
+                        (existing, replacement) -> existing
+                ));
+
+        // 5. Company에 로고 정보 설정
+        companies.forEach(companyDto -> {
+            ImageDto logoImage = logosByCompany.get(companyDto.getCompanyId());
+            if (logoImage != null) {
+                companyDto.setLogo(logoImage.getImg());
+                companyDto.setLogoId(logoImage.getImageId());
+            }
+        });
+
+        return companies;
     }
     
     public List<ProjectDto> findProjectsByCompanyId(Long companyId) {

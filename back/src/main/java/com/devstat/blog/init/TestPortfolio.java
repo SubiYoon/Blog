@@ -32,7 +32,6 @@ public class TestPortfolio {
         // 첫 번째 회사 - 테크 스타트업
         Company company1 = Company.of(
                 "TechCorp",
-                "https://logo.clearbit.com/techcorp.com",
                 LocalDate.of(2020, 3, 1),
                 LocalDate.of(2022, 12, 31)
         );
@@ -41,11 +40,21 @@ public class TestPortfolio {
         // 두 번째 회사 - 대기업
         Company company2 = Company.of(
                 "Samsung Electronics",
-                "https://logo.clearbit.com/samsung.com",
                 LocalDate.of(2023, 1, 15),
                 null
         );
         em.persist(company2);
+
+        em.flush();
+
+        // 회사 로고 이미지 추가
+        Image companyLogo1 = Image.of(company1.getId(), ContentCode.COMPANY, 
+                "https://logo.clearbit.com/techcorp.com");
+        em.persist(companyLogo1);
+
+        Image companyLogo2 = Image.of(company2.getId(), ContentCode.COMPANY, 
+                "https://logo.clearbit.com/samsung.com");
+        em.persist(companyLogo2);
 
         em.flush();
 

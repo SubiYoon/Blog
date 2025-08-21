@@ -45,9 +45,10 @@ public class InfoController {
         return ResponseEntity.ok(menuService.getMenuList(alias));
     }
 
-    @GetMapping("portfolio")
-    public ResponseEntity<List<PortfolioDto>> getPortfolioInfo() {
-        return new ResponseEntity<>(portfolioService.getProtfolioInfo(new AccountDto()), HttpStatus.OK);
+    @GetMapping("/portfolio/{alias}")
+    public ResponseEntity<List<PortfolioDto>> getPortfolioInfo(
+            @PathVariable("alias") String alias) {
+        return new ResponseEntity<>(portfolioService.getPortfolioInfo(alias), HttpStatus.OK);
     }
 
 }

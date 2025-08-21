@@ -90,6 +90,38 @@ export default function EditPortfolioProject({data}) {
         }
     }
 
+    // 이미지 자동 업로드 함수
+    function uploadImageToServer(data, file, callback) {
+        const formData = new FormData();
+        formData.append('contentId', data.contentId);
+        formData.append('contentGb', data.contentGb);
+        formData.append('image', file);
+
+        $axios.post('/portfolio/image', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }).then((response) => {
+            console.log('이미지 업로드 성공:', response.data);
+            if (callback) callback(response.data); // 서버에서 반환된 이미지 정보 (id, path 포함)
+        }).catch((error) => {
+            console.error('이미지 업로드 실패:', error);
+            if (callback) callback(null);
+        });
+    }
+
+    // 이미지 삭제 함수
+    function deleteImageFromServer(imageId, callback) {
+        $axios.delete(`/portfolio/image/${imageId}`)
+            .then((response) => {
+                console.log('이미지 삭제 성공:', response.data);
+                if (callback) callback(true);
+            }).catch((error) => {
+                console.error('이미지 삭제 실패:', error);
+                if (callback) callback(false);
+            });
+    }
+
 
     useEffect(() => {
         // data.projects 안에 있는 items를 펼쳐서 가져오기
@@ -113,18 +145,25 @@ export default function EditPortfolioProject({data}) {
                             accept="image/*"
                             style={{ display: 'none' }}
                             onChange={(e) => {
-                                const file = e.target.files?.[0]
-                                if (file) {
-                                    const reader = new FileReader()
-                                    reader.onloadend = () => {
-                                        setProjectItems(prev => ({
-                                            ...prev,
-                                            logo: reader.result,      // base64 미리보기
-                                            logoFile: file,            // 실제 파일 저장은 로고파일로 저장
-                                        }))
+                                deleteImageFromServer(projectItems.logoId, (response) => {
+                                    const file = e.target.files?.[0]
+                                    if (file) {
+                                        const data = {
+                                            contentId: projectItems.id,
+                                            contentGb: 'COMPANY'
+                                        }
+                                        // 즉시 서버에 업로드
+                                        uploadImageToServer(data, file, (response) => {
+                                            if (response) {
+                                                setProjectItems(prev => ({
+                                                    ...prev,
+                                                    logo: response.img,      // 서버에서 반환된 이미지 경로
+                                                    logoId: response.imageId, // 서버에서 반환된 이미지 ID
+                                                }))
+                                            }
+                                        })
                                     }
-                                    reader.readAsDataURL(file)
-                                }
+                                })
                             }}
                         />
                     </div>
@@ -167,12 +206,15 @@ export default function EditPortfolioProject({data}) {
                         <div className="edit-button-box">
                             <button onClick={() => {
                                 const formData = new FormData();
-                                if(projectItems?.logoFile) {
-                                    formData.append('logo', projectItems.logoFile);
-                                }
                                 formData.append('id', projectItems.id);
                                 formData.append('companyName', projectItems.name);
                                 formData.append('date', projectItems.date);
+                                
+                                // 로고는 이미 서버에 업로드되었으므로 경로만 전송
+                                if (projectItems.logoId) {
+                                    formData.append('logoId', projectItems.logoId);
+                                }
+                                
                                 saveData(formData, 'company');
 
                             }}>저장</button>
@@ -254,15 +296,15 @@ export default function EditPortfolioProject({data}) {
                                                         formData.append('title', item.title)
                                                         formData.append('cont', item.cont)
 
-                                                        item.imgs.forEach((imgObj, index) => {
-                                                            if (imgObj.file) {
-                                                                // 새 이미지
-                                                                formData.append('images', imgObj.file)
-                                                            } else {
-                                                                // 기존 이미지 URL
-                                                                // formData.append('url', imgObj.img)
-                                                            }
-                                                        })
+                                                        // 이미지들은 이미 서버에 업로드되었으므로 경로만 전송
+                                                        const imagePaths = item.imgs
+                                                            .filter(imgObj => imgObj.uploaded)
+                                                            .map(imgObj => imgObj.img)
+                                                            .join(',')
+
+                                                        if (imagePaths) {
+                                                            formData.append('imagePaths', imagePaths)
+                                                        }
 
                                                         saveData(formData, 'item')
 
@@ -292,66 +334,65 @@ export default function EditPortfolioProject({data}) {
                                                 style={{ display: 'none' }}
                                                 onChange={(e) => {
                                                     const file = e.target.files?.[0]
+                                                    const data = {
+                                                        contentId: item.id,
+                                                        contentGb: 'ITEM'
+                                                    }
                                                     if (file) {
-                                                        const updated = [...projectItems.projects]
-                                                        const previewUrl = URL.createObjectURL(file)
-                                                        updated[i].items[j].imgs.push({
-                                                            img: '',
-                                                            preview: previewUrl,
-                                                            file: file,
+                                                        // 즉시 서버에 업로드
+                                                        uploadImageToServer(data, file, (response) => {
+                                                            console.log(response)
+                                                            if (response) {
+                                                                const updated = [...projectItems.projects]
+                                                                updated[i].items[j].imgs.push({
+                                                                    id: response.imageId,
+                                                                    img: response.img,
+                                                                    preview: response.img,
+                                                                    uploaded: true
+                                                                })
+                                                                setProjectItems({ ...projectItems, projects: updated })
+                                                            }
                                                         })
-                                                        setProjectItems({ ...projectItems, projects: updated })
                                                     }
                                                 }}
                                             />
                                         </div>
                                         <div className="image-box">
-                                            {item.imgs.map((items, k) => (
+                                            {item.imgs.map((item, k) => (
                                                 <div key={k} className="image-edit-box">
                                                     <img
-                                                        src={items.preview || items.img} // 파일 선택 전에는 원래 이미지, 이후엔 미리보기
+                                                        src={`http://localhost:8903/static${item.preview || item.img}`} // 파일 선택 전에는 원래 이미지, 이후엔 미리보기 //TODO: 차후 운영 배포시 주석
+                                                        // src={`/static${items.preview || items.img}`} //TODO: 차후 운영 배포시 주석 해제
                                                         alt="logo"
                                                     />
-
                                                     <div className="edit-button-box">
-                                                        <button
-                                                            onClick={() => document.getElementById(`file-${i}-${j}-${k}`).click()}>
-                                                            변경
-                                                        </button>
-
-                                                        {/* 삭제 버튼 */}
+                                                        {/* 삭제 버튼 - 즉시 서버에 삭제 요청 */}
                                                         <button
                                                             onClick={() => {
-                                                                const updated = [...projectItems.projects]
-                                                                updated[i].items[j].imgs.splice(k, 1)
-                                                                setProjectItems({ ...projectItems, projects: updated })
+                                                                console.log(item)
+                                                                if (item.id) {
+                                                                    // 서버에서 이미지 삭제
+                                                                    deleteImageFromServer(item.id, (success) => {
+                                                                        if (success) {
+                                                                            // 성공 시 UI에서도 제거
+                                                                            const updated = [...projectItems.projects]
+                                                                            updated[i].items[j].imgs.splice(k, 1)
+                                                                            setProjectItems({ ...projectItems, projects: updated })
+                                                                        } else {
+                                                                            alert('이미지 삭제에 실패했습니다.')
+                                                                        }
+                                                                    })
+                                                                } else {
+                                                                    // ID가 없는 경우 UI에서만 제거 (업로드되지 않은 이미지)
+                                                                    const updated = [...projectItems.projects]
+                                                                    updated[i].items[j].imgs.splice(k, 1)
+                                                                    setProjectItems({ ...projectItems, projects: updated })
+                                                                }
                                                             }}
                                                         >
                                                             삭제
                                                         </button>
                                                     </div>
-
-                                                    {/* 파일 input (숨김) */}
-                                                    <input
-                                                        type="file"
-                                                        accept="image/*"
-                                                        id={`file-${i}-${j}-${k}`}
-                                                        style={{ display: 'none' }}
-                                                        onChange={(e) => {
-                                                            const file = e.target.files?.[0]
-                                                            if (file) {
-                                                                const updated = [...projectItems.projects]
-                                                                const previewUrl = URL.createObjectURL(file)
-                                                                updated[i].items[j].imgs[k] = {
-                                                                    ...updated[i].items[j].imgs[k],
-                                                                    img: updated[i].items[j].imgs[k].img, // 유지
-                                                                    preview: previewUrl,
-                                                                    file: file, // 전송용 원본 파일
-                                                                }
-                                                                setProjectItems({ ...projectItems, projects: updated })
-                                                            }
-                                                        }}
-                                                    />
                                                 </div>
                                             ))}
                                         </div>

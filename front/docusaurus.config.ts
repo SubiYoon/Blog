@@ -81,11 +81,6 @@ export default async function createConfigAsync() {
                             label: 'Who am I?',
                             position: 'left',
                         },
-                        {
-                            to: '/portfolio',
-                            label: 'Portfolio',
-                            position: 'left',
-                        },
                     ],
                 },
                 // footer: {
@@ -153,6 +148,13 @@ export default async function createConfigAsync() {
         const docsInfo = res.data;
 
         docsInfo.forEach(doc => {
+            config.themeConfig.navbar.items.push(
+                {
+                    to: '/portfolio#' + config.title,
+                    label: 'Portfolio',
+                    position: 'left',
+                },
+            );
             config.themeConfig.navbar.items.push(
                 {
                     type: 'docSidebar',

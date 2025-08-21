@@ -40,7 +40,13 @@ export default function PortfolioProject({ data }) {
                                             <strong>{item.title}</strong>{item.cont}</div>
                                         <div className="image-box">
                                             {item.imgs.map((items, k) => (
-                                                <img key={k} src={items.img} alt="logo" onClick={() => {
+                                                // <img key={k} src={`/static${items.img}`} alt="logo" onClick={() => { //TODO: 차후 운영 배포시 주석 해제
+                                                //     setLightboxImages(item.imgs);
+                                                //     console.log("item.imags", item.imgs)
+                                                //     setLightboxIndex(k);
+                                                // }} />
+                                                <img key={k} src={`http://localhost:8903/static${items.img}`} alt="logo" onClick={() => { //TODO: 차후 운영 배포시 주석
+                                                    console.log(item.imgs)
                                                     setLightboxImages(item.imgs);
                                                     console.log("item.imags", item.imgs)
                                                     setLightboxIndex(k);
