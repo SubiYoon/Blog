@@ -1,16 +1,15 @@
 package com.devstat.blog.domain.portfolio.entity;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import com.devstat.blog.core.baseEntity.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.AccessLevel;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -37,7 +36,7 @@ public class Company extends BaseEntity {
     private LocalDate companyOut;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "company")
-    private List<Project> projectList;
+    private List<Project> projectList = new ArrayList<>();
 
     @Column(name = "delete_yn")
     private String deleteYn;

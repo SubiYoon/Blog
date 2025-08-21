@@ -1,7 +1,8 @@
-import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import {useState, useEffect} from "react";
 import TextareaAutosize from 'react-textarea-autosize';
+import { $axios } from '../../api'
+import { $confirm } from '../ui/SweetAlert'
 
 export default function EditPortfolioProject({data}) {
 
@@ -12,9 +13,9 @@ export default function EditPortfolioProject({data}) {
         const updated = { ...projectItems };
         const newProjectId = updated.projects.length;
 
-
         updated.projects.push({
-            id: newProjectId + 1,
+            id: 'new',
+            companyId: updated.id,
             date: '',
             items: [],
             name: '',
@@ -36,8 +37,10 @@ export default function EditPortfolioProject({data}) {
     function cardAdd(item, i) {
         const j = item[i].items.length;
 
+        console.log(item)
         item[i].items.push({
-            id: Date.now(),
+            id: 'new',
+            projectId: item[i].id,
             title: '',
             cont: '',
             imgs: [],
@@ -55,15 +58,36 @@ export default function EditPortfolioProject({data}) {
     }
 
     //수정 로직 및 세이브 로직
-    function saveData(data, ) {
+    function saveData(data, gb) {
+        const formData = new FormData();
+
         for (let pair of data.entries()) {
+
+            if (pair[0] === 'date') {
+                pair[1] = pair[1].replace('근무중', '');
+                pair[1] = pair[1].replace('진행중', '');
+            }
+            formData.append(pair[0], pair[1]);
             console.log(pair[0], pair[1]);
+        }
+
+        if (formData.get('id') === 'new') {
+            $axios.post(`/portfolio/${gb}`, formData).then((response) => {
+                console.log(response);
+            });
+        } else {
+            $axios.patch(`/portfolio/${gb}/${formData.get('id')}`, formData).then((response) => {
+                console.log(response);
+            });
         }
     }
 
     //삭제
-    function deleteItem(id, gb) {
-        console.log(id, gb);
+    async function deleteItem(id, gb) {
+        if (await $confirm('정말 삭제하시겠습니까?', '삭제후 되돌릴 수 없습니다.', 'question', '삭제', '취소')) {
+            $axios.delete(`/portfolio/${gb}/${id}`).then((response) => {
+            });
+        }
     }
 
 
@@ -79,7 +103,8 @@ export default function EditPortfolioProject({data}) {
                     <div className="image-box" onClick={() => document.getElementById('logo-upload')?.click()}
                          style={{ cursor: 'pointer' }}>
                         <img
-                            src={projectItems.logo}
+                            // src={`/static${projectItems.logo}`} //TODO: 차후 운영 배포시 주석해제
+                            src={`http://localhost:8903/static${projectItems.logo}`} //TODO: 차후 운영 배포시 주석
                             alt="로고 미리보기"
                         />
                         <input
@@ -146,9 +171,9 @@ export default function EditPortfolioProject({data}) {
                                     formData.append('logo', projectItems.logoFile);
                                 }
                                 formData.append('id', projectItems.id);
-                                formData.append('name', projectItems.name);
+                                formData.append('companyName', projectItems.name);
                                 formData.append('date', projectItems.date);
-                                saveData(formData);
+                                saveData(formData, 'company');
 
                             }}>저장</button>
                         </div>
@@ -193,9 +218,10 @@ export default function EditPortfolioProject({data}) {
                                     <button onClick={() => {
                                         const formData = new FormData()
                                         formData.append('id', project.id)
-                                        formData.append('name', project.name)
+                                        formData.append('companyId', project.companyId)
+                                        formData.append('projectName', project.name)
                                         formData.append('date', project.date)
-                                        saveData(formData)
+                                        saveData(formData, 'project')
 
                                     }}>저장
                                     </button>
@@ -224,24 +250,25 @@ export default function EditPortfolioProject({data}) {
                                                             formData.append('logo', projectItems.logoFile)
                                                         }
                                                         formData.append('id', item.id)
-                                                        formData.append('name', item.title)
+                                                        formData.append('projectId', item.projectId)
+                                                        formData.append('title', item.title)
                                                         formData.append('cont', item.cont)
 
                                                         item.imgs.forEach((imgObj, index) => {
                                                             if (imgObj.file) {
                                                                 // 새 이미지
-                                                                formData.append('newFiles', imgObj.file)
+                                                                formData.append('images', imgObj.file)
                                                             } else {
                                                                 // 기존 이미지 URL
-                                                                formData.append('url', imgObj.img)
+                                                                // formData.append('url', imgObj.img)
                                                             }
                                                         })
 
-                                                        saveData(formData)
+                                                        saveData(formData, 'item')
 
                                                     }}>기능 저장
                                                     </button>
-                                                    <button onClick={() => deleteItem(item.id, 'detail')}>기능 삭제</button>
+                                                    <button onClick={() => deleteItem(item.id, 'item')}>기능 삭제</button>
                                                 </div>
                                             </div>
                                             <TextareaAutosize

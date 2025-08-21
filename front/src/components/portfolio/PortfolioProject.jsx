@@ -1,7 +1,6 @@
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import { useState } from "react";
-import { Dot } from 'lucide-react';
 
 export default function PortfolioProject({ data }) {
 
@@ -15,7 +14,8 @@ export default function PortfolioProject({ data }) {
                     {data.logo && (
                         <div className="image-box">
                             <img
-                                src={data.logo}
+                                // src={`/static${data.logo}`} //TODO: 차후 운영 배포시 주석해제
+                                src={`http://localhost:8903/static${data.logo}`} //TODO: 차후 운영 배포시 주석
                                 alt={data.name}
                             />
                         </div>)}

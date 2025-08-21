@@ -1,15 +1,5 @@
 package com.devstat.blog.domain.portfolio.service;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.devstat.blog.core.annotation.InjectAccountInfo;
 import com.devstat.blog.core.aspect.AccountDto;
 import com.devstat.blog.core.code.StatusCode;
@@ -20,20 +10,22 @@ import com.devstat.blog.domain.portfolio.dto.ItemRequestDto;
 import com.devstat.blog.domain.portfolio.dto.PortfolioDto;
 import com.devstat.blog.domain.portfolio.dto.ProjectRequestDto;
 import com.devstat.blog.domain.portfolio.entity.Company;
-import com.devstat.blog.domain.portfolio.entity.Item;
 import com.devstat.blog.domain.portfolio.entity.Image;
+import com.devstat.blog.domain.portfolio.entity.Item;
 import com.devstat.blog.domain.portfolio.entity.Project;
-import com.devstat.blog.domain.portfolio.repository.CompanyJpa;
-import com.devstat.blog.domain.portfolio.repository.CompanyQuery;
-import com.devstat.blog.domain.portfolio.repository.ItemJpa;
-import com.devstat.blog.domain.portfolio.repository.ItemQuery;
-import com.devstat.blog.domain.portfolio.repository.ImageJpa;
-import com.devstat.blog.domain.portfolio.repository.ProjectJpa;
-import com.devstat.blog.domain.portfolio.repository.ProjectQuery;
-import com.devstat.blog.domain.portfolio.repository.PortfolioQueryRepository;
+import com.devstat.blog.domain.portfolio.repository.*;
 import com.devstat.blog.utility.ItemCheck;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -41,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class PortfolioService {
 
     @Value("${blog.portfolio.path}")
-    private String uploadPath;
+    private String blogPortfolioPath;
 
     private final CompanyJpa companyJpa;
     private final CompanyQuery companyQuery;
@@ -56,32 +48,40 @@ public class PortfolioService {
      * 포트폴리오 전체 정보 조회 (계층적 구조)
      */
     public List<PortfolioDto> getProtfolioInfo(AccountDto accountDto) {
-        return portfolioQueryRepository.findCompletePortfolioData();
+        return portfolioQueryRepository.findCompletePortfolioData(accountDto);
     }
 
-    /**
-     * 특정 회사의 포트폴리오 정보 조회
-     */
-    public PortfolioDto getPortfolioInfoByCompanyId(Long companyId) {
-        return portfolioQueryRepository.findPortfolioDataByCompanyId(companyId);
-    }
-
+    @InjectAccountInfo
     @Transactional(readOnly = false)
-    public StatusCode insertCompany(CompanyRequestDto dto, MultipartFile logo) {
+    public StatusCode insertCompany(AccountDto accountDto, CompanyRequestDto dto, MultipartFile logo) {
 
         if (ItemCheck.isEmpty(logo)) {
             return StatusCode.LOGO_EMPTY;
         }
 
-        Path path = Paths.get(uploadPath, logo.getOriginalFilename());
+        Path path = Paths.get(blogPortfolioPath, accountDto.getAccountId(), logo.getOriginalFilename());
 
         try {
+            File parent = path.getParent().toFile();
+            if (!parent.exists()) {
+                parent.mkdirs();
+            }
+
             logo.transferTo(path.toFile());
         } catch (Exception e) {
             return StatusCode.LOGO_SAVE_FAIL;
         }
 
-        Company company = Company.of(dto.getCompanyName(), path.toString(), dto.getCompanyIn(), dto.getCompanyOut());
+        String[] split = dto.getDate().split(" ~ ");
+
+        LocalDate companyIn = LocalDate.parse(split[0]);
+        LocalDate companyOut = null;
+
+        if (split.length != 1) {
+            companyOut = LocalDate.parse(split[1]);
+        }
+
+        Company company = Company.of(dto.getCompanyName(), path.toString(), companyIn, companyOut);
 
         companyJpa.save(company);
 
@@ -95,8 +95,17 @@ public class PortfolioService {
         Company findCompany = companyJpa.findById(id, accountDto.getAccountId())
                 .orElseThrow(() -> new CmmnException(StatusCode.COMPANY_NOT_FOUND));
 
-        if (!ItemCheck.isEmpty(logo)) {
-            findCompany.update(dto.getCompanyName(), dto.getCompanyIn(), dto.getCompanyOut());
+        String[] split = dto.getDate().split(" ~ ");
+
+        LocalDate companyIn = LocalDate.parse(split[0]);
+        LocalDate companyOut = null;
+
+        if (split.length != 1) {
+            companyOut = LocalDate.parse(split[1]);
+        }
+
+        if (ItemCheck.isEmpty(logo)) {
+            findCompany.update(dto.getCompanyName(), companyIn, companyOut);
         } else {
             File file = new File(findCompany.getCompanyLogoPath());
 
@@ -104,7 +113,7 @@ public class PortfolioService {
                 file.delete();
             }
 
-            Path path = Paths.get(uploadPath, logo.getOriginalFilename());
+            Path path = Paths.get(blogPortfolioPath, accountDto.getAccountId(), logo.getOriginalFilename());
 
             try {
                 logo.transferTo(path.toFile());
@@ -112,7 +121,7 @@ public class PortfolioService {
                 throw new CmmnException(StatusCode.LOGO_SAVE_FAIL);
             }
 
-            findCompany.update(dto.getCompanyName(), path.toString(), dto.getCompanyIn(), dto.getCompanyOut());
+            findCompany.update(dto.getCompanyName(), path.toString(), companyIn, companyOut);
         }
 
         return StatusCode.SUCCESS;
@@ -198,10 +207,19 @@ public class PortfolioService {
     @InjectAccountInfo
     @Transactional(readOnly = false)
     public StatusCode insertProject(AccountDto accountDto, ProjectRequestDto dto) {
-        Company findCompanay = companyJpa.findById(dto.getCompanyId(), accountDto.getAccountId())
+        Company findCompany = companyJpa.findById(dto.getCompanyId(), accountDto.getAccountId())
                 .orElseThrow(() -> new CmmnException(StatusCode.COMPANY_NOT_FOUND));
 
-        Project project = Project.of(findCompanay, dto.getProjectName(), dto.getProjectStart(), dto.getProjectEnd());
+        String[] split = dto.getDate().split(" ~ ");
+
+        LocalDate projectStart = LocalDate.parse(split[0]);
+        LocalDate projectEnd = null;
+
+        if (split.length != 1) {
+            projectEnd = LocalDate.parse(split[1]);
+        }
+
+        Project project = Project.of(findCompany, dto.getProjectName(), projectStart, projectEnd);
         projectJpa.save(project);
 
         return StatusCode.SUCCESS;
@@ -214,7 +232,16 @@ public class PortfolioService {
         Project findProject = projectJpa.findById(id, accountDto.getAccountId())
                 .orElseThrow(() -> new CmmnException(StatusCode.PROJECT_NOT_FOUND));
 
-        findProject.update(dto.getProjectName(), dto.getProjectStart(), dto.getProjectEnd());
+        String[] split = dto.getDate().split(" ~ ");
+
+        LocalDate projectStart = LocalDate.parse(split[0]);
+        LocalDate projectEnd = null;
+
+        if (split.length != 1) {
+            projectEnd = LocalDate.parse(split[1]);
+        }
+
+        findProject.update(dto.getProjectName(), projectStart, projectEnd);
 
         return StatusCode.SUCCESS;
     }
@@ -222,7 +249,6 @@ public class PortfolioService {
     @InjectAccountInfo
     @Transactional(readOnly = false)
     public StatusCode deleteProject(AccountDto accountDto, Long id) {
-
         Project findProject = projectJpa.findById(id, accountDto.getAccountId())
                 .orElseThrow(() -> new CmmnException(StatusCode.PROJECT_NOT_FOUND));
 
@@ -234,7 +260,7 @@ public class PortfolioService {
     private void saveItemImages(Long itemId, List<MultipartFile> images) {
         for (MultipartFile imageFile : images) {
             if (!ItemCheck.isEmpty(imageFile)) {
-                Path path = Paths.get(uploadPath, imageFile.getOriginalFilename());
+                Path path = Paths.get(blogPortfolioPath, imageFile.getOriginalFilename());
                 try {
                     imageFile.transferTo(path.toFile());
                     Image image = Image.of(itemId, ContentCode.ITEM, path.toString());

@@ -5,7 +5,6 @@ import com.devstat.blog.domain.member.dto.MemberDto;
 import com.devstat.blog.domain.member.service.MemberService;
 import com.devstat.blog.domain.menu.dto.MenuDto;
 import com.devstat.blog.domain.menu.service.MenuService;
-
 import com.devstat.blog.domain.portfolio.dto.PortfolioDto;
 import com.devstat.blog.domain.portfolio.service.PortfolioService;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +46,7 @@ public class InfoController {
     }
 
     @GetMapping("portfolio")
-    public ResponseEntity<List<PortfolioDto>> getProtfolioInfo() {
+    public ResponseEntity<List<PortfolioDto>> getPortfolioInfo() {
         return new ResponseEntity<>(portfolioService.getProtfolioInfo(new AccountDto()), HttpStatus.OK);
     }
 

@@ -1,7 +1,6 @@
 package com.devstat.blog.config;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,9 +16,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MvcConfiguration implements WebMvcConfigurer {
 
-    @Value("${blog.file.path}")
-    private String blogFilePath;
-
     @Bean
     AuditorAware<String> auditorProvider() {
         // null값 허용
@@ -29,7 +25,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
                 return Optional.ofNullable(
                         SecurityContextHolder.getContext().getAuthentication() != null
                                 ? SecurityContextHolder.getContext().getAuthentication().getName()
-                                : null);
+                                : "ABCD");
             }
         };
     }
@@ -37,6 +33,6 @@ public class MvcConfiguration implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**")
-                .addResourceLocations("file:" + blogFilePath);
+                .addResourceLocations("file:");
     }
 }

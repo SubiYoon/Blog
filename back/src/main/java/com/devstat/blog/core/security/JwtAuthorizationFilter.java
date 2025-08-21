@@ -76,15 +76,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                         filterChain.doFilter(request, response);
-                    } else throw new CustomJwtException(StatusCode.USER_NOT_FOUND);
+                    } else throw new CmmnException(StatusCode.USER_NOT_FOUND);
                 } else {
                     Cookie jwtCookie = new Cookie("DEVSTAT-JWT", null);
                     jwtCookie.setMaxAge(0);
                     jwtCookie.setPath("/");
                     response.addCookie(jwtCookie);
-                    throw new CustomJwtException(StatusCode.TOKEN_NOT_VALID);
+                    throw new CmmnException(StatusCode.TOKEN_NOT_VALID);
                 }
-            }else throw new CustomJwtException(StatusCode.TOKEN_NOT_FOUND);
+            }else throw new CmmnException(StatusCode.TOKEN_NOT_FOUND);
         }catch (Exception e) {
             ObjectMapper objectMapper = new ObjectMapper();
 

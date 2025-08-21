@@ -26,7 +26,7 @@ public class DirectoryWatcher {
     private static WatchService watchService;
     private static Path rootPath;
     private static final Map<WatchKey, Path> keys = new ConcurrentHashMap<>();
-    private static final Set<String> excludedDirs = new HashSet<>(Arrays.asList(".git", ".obsidian", "Attached File"));
+    private static final Set<String> excludedDirs = new HashSet<>(Arrays.asList(".git", ".obsidian", "Attached File", "portfolio"));
     private static final AtomicBoolean watcherThreadStarted = new AtomicBoolean(false);
     private static long lastGlobalEventTime = 0;
     private static final long GLOBAL_DEBOUNCE_MILLIS = 1000; // 1 second debounce
@@ -172,7 +172,8 @@ public class DirectoryWatcher {
                     for (File file : listFiles) {
                         if (file.isDirectory() && !file.getName().equals(".obsidian")
                                 && !file.getName().equals("Attached File")
-                                && !file.getName().equals(".git")) {
+                                && !file.getName().equals(".git")
+                                && !file.getName().equals("portfolio")) {
                             Menu menu = Menu.of(file.getName(), file.getName(), findMember);
                             menuJpa.save(menu);
                         }

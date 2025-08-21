@@ -1,14 +1,15 @@
 package com.devstat.blog.domain.portfolio.dto;
 
-import java.time.LocalDate;
-
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class CompanyRequestDto {
 
+    @NotNull(message = "회사 이름은 공백일 수 없습니다.")
     private String companyName;
-    private LocalDate companyIn;
-    private LocalDate companyOut;
+
+    @NotNull(message = "입사일은 공백일 수 없습니다.")
+    private String date;
 
 }

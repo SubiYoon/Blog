@@ -1,24 +1,20 @@
 package com.devstat.blog.domain.portfolio.repository;
 
+import com.devstat.blog.core.aspect.AccountDto;
+import com.devstat.blog.domain.portfolio.code.ContentCode;
+import com.devstat.blog.domain.portfolio.dto.*;
+import com.devstat.blog.domain.portfolio.entity.QCompany;
+import com.devstat.blog.domain.portfolio.entity.QImage;
+import com.devstat.blog.domain.portfolio.entity.QItem;
+import com.devstat.blog.domain.portfolio.entity.QProject;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Repository;
-
-import com.devstat.blog.domain.portfolio.dto.ImageDto;
-import com.devstat.blog.domain.portfolio.dto.ItemDto;
-import com.devstat.blog.domain.portfolio.dto.PortfolioDto;
-import com.devstat.blog.domain.portfolio.dto.ProjectDto;
-import com.devstat.blog.domain.portfolio.entity.QCompany;
-import com.devstat.blog.domain.portfolio.entity.QProject;
-import com.devstat.blog.domain.portfolio.entity.QItem;
-import com.devstat.blog.domain.portfolio.entity.QImage;
-import com.devstat.blog.domain.portfolio.code.ContentCode;
-import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-
-import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
@@ -35,17 +31,19 @@ public class PortfolioQueryRepository {
      * 포트폴리오 전체 데이터를 계층적으로 조회
      * Company -> Project -> Item -> Image 순으로 조회하여 중첩 구조로 반환
      */
-    public List<PortfolioDto> findCompletePortfolioData() {
+    public List<PortfolioDto> findCompletePortfolioData(AccountDto accountDto) {
         // 1. Company 조회
         List<PortfolioDto> companies = query
-                .select(Projections.bean(PortfolioDto.class,
+                .select(new QPortfolioDto(
                         company.id.as("companyId"),
                         company.companyName.as("name"),
                         company.companyLogoPath.as("logo"),
-                        company.companyIn.stringValue().concat(" ~ ").concat(company.companyOut.stringValue())
-                                .as("date")))
+                        company.companyIn.as("companyIn"),
+                        company.companyOut.as("companyOut")))
                 .from(company)
-                .where(company.deleteYn.isNull().or(company.deleteYn.ne("Y")))
+                .where(
+                        company.deleteYn.isNull().or(company.deleteYn.ne("Y")),
+                        company.createBy.eq(accountDto.getAccountId()))
                 .orderBy(company.companyIn.asc())
                 .fetch();
 
@@ -60,15 +58,18 @@ public class PortfolioQueryRepository {
 
         // 2. Project 조회 (Company와 연관)
         List<ProjectDto> projects = query
-                .select(Projections.bean(ProjectDto.class,
+                .select(new QProjectDto(
                         project.id.as("projectId"),
                         project.company.id.as("companyId"),
                         project.projectName.as("name"),
-                        project.projectStart.stringValue().concat(" ~ ").concat(project.projectEnd.stringValue())
-                                .as("date")))
+                        project.projectStart.as("projectStart"),
+                        project.projectEnd.as("projectEnd")))
                 .from(project)
-                .where(project.company.id.in(companyIds)
-                        .and(project.deleteYn.isNull().or(project.deleteYn.ne("Y"))))
+                .where(
+                        project.company.id.in(companyIds)
+                        .and(project.deleteYn.isNull()
+                                .or(project.deleteYn.ne("Y"))),
+                        project.createBy.eq(accountDto.getAccountId()))
                 .orderBy(project.projectStart.asc())
                 .fetch();
 
@@ -90,8 +91,11 @@ public class PortfolioQueryRepository {
                             item.title.as("name"),
                             item.cont))
                     .from(item)
-                    .where(item.project.id.in(projectIds)
-                            .and(item.deleteYn.isNull().or(item.deleteYn.ne("Y"))))
+                    .where(
+                            item.project.id.in(projectIds)
+                            .and(item.deleteYn.isNull()
+                                    .or(item.deleteYn.ne("Y"))),
+                            item.createBy.eq(accountDto.getAccountId()))
                     .orderBy(item.id.asc())
                     .fetch();
 
@@ -113,7 +117,8 @@ public class PortfolioQueryRepository {
                         .from(image)
                         .where(image.contentId.in(itemIds)
                                 .and(image.contentGb.eq(ContentCode.ITEM))
-                                .and(image.deleteYn.isNull().or(image.deleteYn.ne("Y"))))
+                                .and(image.deleteYn.isNull().or(image.deleteYn.ne("Y")))
+                                .and(image.createBy.eq(accountDto.getAccountId())))
                         .orderBy(image.id.asc())
                         .fetch();
 
@@ -142,73 +147,5 @@ public class PortfolioQueryRepository {
         });
 
         return companies;
-    }
-
-    /**
-     * 특정 Company의 포트폴리오 데이터 조회
-     */
-    public PortfolioDto findPortfolioDataByCompanyId(Long companyId) {
-        // Company 조회
-        PortfolioDto companyDto = query
-                .select(Projections.bean(PortfolioDto.class,
-                        company.id.as("companyId"),
-                        company.companyName.as("name"),
-                        company.companyLogoPath.as("logo"),
-                        company.companyIn.stringValue().concat(" ~ ").concat(company.companyOut.stringValue())
-                                .as("date")))
-                .from(company)
-                .where(company.id.eq(companyId)
-                        .and(company.deleteYn.isNull().or(company.deleteYn.ne("Y"))))
-                .fetchOne();
-
-        if (companyDto == null) {
-            return null;
-        }
-
-        // Project 조회
-        List<ProjectDto> projects = query
-                .select(Projections.bean(ProjectDto.class,
-                        project.id.as("projectId"),
-                        project.projectName.as("name"),
-                        project.projectStart.stringValue().concat(" ~ ").concat(project.projectEnd.stringValue())
-                                .as("date")))
-                .from(project)
-                .where(project.company.id.eq(companyId)
-                        .and(project.deleteYn.isNull().or(project.deleteYn.ne("Y"))))
-                .orderBy(project.projectStart.asc())
-                .fetch();
-
-        // 각 Project에 대해 Item과 Image 조회
-        projects.forEach(projectDto -> {
-            List<ItemDto> items = query
-                    .select(Projections.bean(ItemDto.class,
-                            item.id.as("itemId"),
-                            item.title.as("name"),
-                            item.cont))
-                    .from(item)
-                    .where(item.project.id.eq(projectDto.getProjectId())
-                            .and(item.deleteYn.isNull().or(item.deleteYn.ne("Y"))))
-                    .orderBy(item.id.asc())
-                    .fetch();
-
-            // 각 Item에 대해 Image 조회
-            items.forEach(itemDto -> {
-                List<ImageDto> images = query
-                        .select(Projections.bean(ImageDto.class,
-                                image.imagePath.as("img")))
-                        .from(image)
-                        .where(image.contentId.eq(itemDto.getItemId())
-                                .and(image.contentGb.eq(ContentCode.ITEM))
-                                .and(image.deleteYn.isNull().or(image.deleteYn.ne("Y"))))
-                        .orderBy(image.id.asc())
-                        .fetch();
-                itemDto.setImageList(images);
-            });
-
-            projectDto.setItemList(items);
-        });
-
-        companyDto.setProjectList(projects);
-        return companyDto;
     }
 }

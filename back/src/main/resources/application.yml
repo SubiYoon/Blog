@@ -45,8 +45,3 @@ jwtSecretKey: ENC(/dmaD89iAo2bFpDLHgX7pHe/AsTS/JpwW0QANm/Q7g3oL1a2303WlqGXwA0d2x
 # CORS 설정
 origin:
   url: http://localhost:3000
-
-# 포트폴리오 파일 업로드 경로
-blog:
-  portfolio:
-    path: /tmp/portfolio

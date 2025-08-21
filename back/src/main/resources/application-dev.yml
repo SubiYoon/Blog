@@ -6,7 +6,7 @@ blog:
   just:
     path: /opt/homebrew/bin/just
   portfolio:
-    path: Users/ABCD/blogTempFile/portfolio
+    path: /Users/ABCD/blogTempFile/portfolio
 
 origin:
   url: http://localhost:3000
