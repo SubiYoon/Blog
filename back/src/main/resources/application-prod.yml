@@ -20,3 +20,9 @@ blog:
 
 origin:
   url: https://blog.devstat.com
+
+init:
+  user:
+    alias: ENC(dyh4J0F39S5VfOqNki3Buw==)
+    name: ENC(iJyFHjwEy+YWp0P8W2pKUN+/RL23Suqk)
+    password: ENC(bf/nuHy6xLDotvVKFyLA6YFTvegBHtxm)
