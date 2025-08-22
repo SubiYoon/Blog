@@ -9,7 +9,7 @@ blog:
   front:
     path: ./front
   just:
-    path: /opt/homebrew/bin/just
+    path: /home/linuxbrew/.linuxbrew/bin/just
   portfolio:
     path: /nas/project/blog/portfolio
 
