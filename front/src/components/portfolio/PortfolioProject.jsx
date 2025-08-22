@@ -14,8 +14,8 @@ export default function PortfolioProject({ data }) {
                     {data.logo && (
                         <div className="image-box">
                             <img
-                                // src={`/static${data.logo}`} //TODO: 차후 운영 배포시 주석해제
-                                src={`http://localhost:8903/static${data.logo}`} //TODO: 차후 운영 배포시 주석
+                                src={`/static${data.logo}`} //TODO: 차후 운영 배포시 주석해제
+                                // src={`http://localhost:8903/static${data.logo}`} //TODO: 차후 운영 배포시 주석
                                 alt={data.name}
                             />
                         </div>)}
@@ -40,17 +40,17 @@ export default function PortfolioProject({ data }) {
                                             <strong>{item.title}</strong>{item.cont}</div>
                                         <div className="image-box">
                                             {item.imgs.map((items, k) => (
-                                                // <img key={k} src={`/static${items.img}`} alt="logo" onClick={() => { //TODO: 차후 운영 배포시 주석 해제
-                                                //     setLightboxImages(item.imgs);
-                                                //     console.log("item.imags", item.imgs)
-                                                //     setLightboxIndex(k);
-                                                // }} />
-                                                <img key={k} src={`http://localhost:8903/static${items.img}`} alt="logo" onClick={() => { //TODO: 차후 운영 배포시 주석
-                                                    console.log(item.imgs)
+                                                <img key={k} src={`/static${items.img}`} alt="logo" onClick={() => { //TODO: 차후 운영 배포시 주석 해제
                                                     setLightboxImages(item.imgs);
                                                     console.log("item.imags", item.imgs)
                                                     setLightboxIndex(k);
                                                 }} />
+                                                // <img key={k} src={`http://localhost:8903/static${items.img}`} alt="logo" onClick={() => { //TODO: 차후 운영 배포시 주석
+                                                //     console.log(item.imgs)
+                                                //     setLightboxImages(item.imgs);
+                                                //     console.log("item.imags", item.imgs)
+                                                //     setLightboxIndex(k);
+                                                // }} />
                                             ))}
                                         </div>
                                     </div>
@@ -84,8 +84,8 @@ export default function PortfolioProject({ data }) {
                 open={lightboxIndex >= 0}
                 close={() => setLightboxIndex(-1)}
                 index={lightboxIndex}
-                slides={lightboxImages.map(imgObj => ({ src: `http://localhost:8903/static${imgObj.img}` }))} //TODO: 차후 운영 배포시 주석
-                // slides={lightboxImages.map(imgObj => ({ src: `/static${imgObj.img}` }))} //TODO: 차후 운영 배포시 주석 해제
+                // slides={lightboxImages.map(imgObj => ({ src: `http://localhost:8903/static${imgObj.img}` }))} //TODO: 차후 운영 배포시 주석
+                slides={lightboxImages.map(imgObj => ({ src: `/static${imgObj.img}` }))} //TODO: 차후 운영 배포시 주석 해제
                 on={{ view: ({ index }) => setLightboxIndex(index) }}
                 render={{
                     buttonPrev: lightboxIndex > 0 ? undefined : () => null,
@@ -143,8 +143,8 @@ export default function PortfolioProject({ data }) {
                                 {lightboxImages.map((imgObj, idx) => (
                                     <img
                                         key={idx}
-                                        src={`http://localhost:8903/static${imgObj.img}`} //TODO: 차후 운영 배포시 주석
-                                        // src={`/static${imgObj.img}`} //TODO: 차후 운영 배포시 주석 해제
+                                        // src={`http://localhost:8903/static${imgObj.img}`} //TODO: 차후 운영 배포시 주석
+                                        src={`/static${imgObj.img}`} //TODO: 차후 운영 배포시 주석 해제
                                         onClick={() => setLightboxIndex(idx)}
                                         style={{
                                             width: '80px',

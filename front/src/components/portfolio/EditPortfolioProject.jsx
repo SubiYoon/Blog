@@ -103,8 +103,8 @@ export default function EditPortfolioProject({data, onDataUpdate}) {
                     <div className="image-box" onClick={() => document.getElementById('logo-upload')?.click()}
                          style={{ cursor: 'pointer' }}>
                         <img
-                            // src={`/static${projectItems.logo}`} //TODO: 차후 운영 배포시 주석해제
-                            src={`http://localhost:8903/static${projectItems.logo}`} //TODO: 차후 운영 배포시 주석
+                            src={`/static${projectItems.logo}`} //TODO: 차후 운영 배포시 주석해제
+                            // src={`http://localhost:8903/static${projectItems.logo}`} //TODO: 차후 운영 배포시 주석
                             alt="로고 미리보기"
                         />
                         <input
@@ -422,8 +422,8 @@ export default function EditPortfolioProject({data, onDataUpdate}) {
                                             {item.imgs.map((item, k) => (
                                                 <div key={k} className="image-edit-box">
                                                     <img
-                                                        src={`http://localhost:8903/static${item.preview || item.img}`} // 파일 선택 전에는 원래 이미지, 이후엔 미리보기 //TODO: 차후 운영 배포시 주석
-                                                        // src={`/static${items.preview || items.img}`} //TODO: 차후 운영 배포시 주석 해제
+                                                        // src={`http://localhost:8903/static${item.preview || item.img}`} // 파일 선택 전에는 원래 이미지, 이후엔 미리보기 //TODO: 차후 운영 배포시 주석
+                                                        src={`/static${item.preview || item.img}`} //TODO: 차후 운영 배포시 주석 해제
                                                         alt="logo"
                                                     />
                                                     <div className="edit-button-box">
