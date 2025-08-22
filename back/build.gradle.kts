@@ -28,7 +28,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.security:spring-security-core")
-    implementation("org.springframework.boot:spring-boot-starter-security:")
+    implementation("org.springframework.boot:spring-boot-starter-security")
 
     // Jasypt
     implementation("com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5")
@@ -45,13 +45,14 @@ dependencies {
     annotationProcessor("jakarta.annotation:jakarta.annotation-api")
     annotationProcessor("jakarta.persistence:jakarta.persistence-api")
 
+    // postgresql
+    implementation("org.postgresql:postgresql")
 
 	compileOnly("org.projectlombok:lombok")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     // p6spy
     developmentOnly("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0")
-
 
 	developmentOnly("com.h2database:h2:1.4.200")
 	annotationProcessor("org.projectlombok:lombok")

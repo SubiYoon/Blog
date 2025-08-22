@@ -3,6 +3,11 @@ spring:
     multipart:
       location: /nas/project/blog/blogTempFile
 
+  datasource:
+    url: ENC(EkyJGO77WG2UehhTxESpg9RIL/+IleHxX/+UZ/P7DyKiotG4ThKRa0hhKbacJ49qmS2oyyv7Nb4=)
+    username: ENC(UGqMCptWo0kCT1Ma1p3gF0r7Ihnr11FV)
+    password: ENC(ddGXg3XAkzZqXpt+UsF28oBIXBdDGbhe)
+
 blog:
   file:
     path: /nas/project/blog

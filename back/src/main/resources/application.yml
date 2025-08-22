@@ -2,6 +2,21 @@ spring:
   application:
     name: blog
 
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        # show_sql: true
+        format_sql: true
+        default_batch_fetch_size: 100 #global?? ??
+      open-in-view: false
+    data:
+      web:
+        pageable:
+          default-page-size: 20
+          max-page-size: 2000
+
 server:
   serverlet:
     context-path: /
@@ -11,33 +26,26 @@ server:
       force: true
   port: 8903
 
-jpa:
-  hibernate:
-    ddl-auto: update
-  properties:
-    hibernate:
-      # show_sql: true
-      format_sql: true
-      default_batch_fetch_size: 100 #global?? ??
-    open-in-view: false
-  data:
-      web:
-        pageable:
-          default-page-size: 20
-          max-page-size: 2000
-
 logging:
   level:
-    root: info # ?? ?? ?? ??
-    # Hibernate SQL ??
-    org.hibernate.SQL: debug # ???? ??
-    org.hibernate.type.descriptor.sql: trace # ???? ???? ?
+    root: info
 
-    # Spring ?? ?? ??
+    # Hibernate SQL
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
+    org.hibernate.type.descriptor.sql: trace
+
+    # 트랜잭션
+    org.springframework.transaction: debug
+
+    # 웹
     org.springframework.web: debug
     org.springframework.boot.autoconfigure.web: debug
 
-    # ??? ?? Exception ??
+    # HikariCP
+    com.zaxxer.hikari: debug
+
+    # 내 애플리케이션 패키지
     devstat.blog: debug
 
 jwtSecretKey: ENC(/dmaD89iAo2bFpDLHgX7pHe/AsTS/JpwW0QANm/Q7g3oL1a2303WlqGXwA0d2xlY)
