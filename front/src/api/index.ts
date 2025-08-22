@@ -8,7 +8,7 @@ import axios from 'axios'
 
 // TODO: 로컬에 돌릴시 주석하고 로컬 전용으로 수정해야함.
 export const $axios = axios.create({
-    baseURL: 'https://blog.devstat.app',
+    baseURL: 'https://blog.devstat.app/api',
     withCredentials: true
 })
 
