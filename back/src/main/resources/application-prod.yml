@@ -19,7 +19,7 @@ blog:
     path: /nas/project/blog/portfolio
 
 origin:
-  url: https://blog.devstat.com
+  url: https://www.devstat.com
 
 init:
   user:

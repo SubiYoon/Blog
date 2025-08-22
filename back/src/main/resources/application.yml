@@ -49,7 +49,3 @@ logging:
     devstat.blog: debug
 
 jwtSecretKey: ENC(7GsY1475yK8bJJ55QAleJWu19r+sup9gwQBcOIo+6JNTGfU1znsr4hP6WjN3kYsB)
-
-# CORS 설정
-origin:
-  url: http://localhost:3000

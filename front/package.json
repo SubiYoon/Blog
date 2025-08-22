@@ -5,7 +5,7 @@
     "scripts": {
         "docusaurus": "docusaurus",
         "dev": "API_SERVER=http://localhost:8903 docusaurus start",
-        "prod": "API_SERVER=https://blog.devstat.app docusaurus start",
+        "prod": "API_SERVER=https://www.devstat.app docusaurus start",
         "build": "docusaurus build",
         "swizzle": "docusaurus swizzle",
         "deploy": "docusaurus deploy",
