@@ -48,7 +48,7 @@ logging:
     # 내 애플리케이션 패키지
     devstat.blog: debug
 
-jwtSecretKey: ENC(/dmaD89iAo2bFpDLHgX7pHe/AsTS/JpwW0QANm/Q7g3oL1a2303WlqGXwA0d2xlY)
+jwtSecretKey: ENC(7GsY1475yK8bJJ55QAleJWu19r+sup9gwQBcOIo+6JNTGfU1znsr4hP6WjN3kYsB)
 
 # CORS 설정
 origin:

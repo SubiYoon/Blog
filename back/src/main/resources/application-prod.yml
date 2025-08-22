@@ -4,9 +4,9 @@ spring:
       location: /nas/project/blog/blogTempFile
 
   datasource:
-    url: ENC(EkyJGO77WG2UehhTxESpg9RIL/+IleHxX/+UZ/P7DyKiotG4ThKRa0hhKbacJ49qmS2oyyv7Nb4=)
-    username: ENC(UGqMCptWo0kCT1Ma1p3gF0r7Ihnr11FV)
-    password: ENC(ddGXg3XAkzZqXpt+UsF28oBIXBdDGbhe)
+    url: ENC(h7AtFar9sQixN3HNmSLluMP5sKVGKDtzD9uHlk/0x0nLaUErJpUrUQhh1OBrCrJQfnINbtU7e3I=)
+    username: ENC(uwj1BDnYIhnSFoUz8Hjot3i/9Bpn5AW6)
+    password: ENC(tqiQK4a4yJ0x5Rdk/4sjdqQbJHlThS0j)
 
 blog:
   file:
