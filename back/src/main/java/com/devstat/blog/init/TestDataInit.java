@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.nio.file.*;
 
 @Component
-@Profile("dev")
+//@Profile("dev")
 @Qualifier("member")
 @RequiredArgsConstructor
 public class TestDataInit {
@@ -49,7 +49,8 @@ public class TestDataInit {
                 RoleCode.ADMIN,
                 "https://abctodev.notion.site/B-E-a7b07fca67da4327b00f1448d645de59?source=copy_link",
                 "https://github.com/SubiYoon/SubiYoon.github.io.git",
-                "/Users/ABCD/blogTempFile/ABCD/",
+//                "/Users/ABCD/blogTempFile/ABCD/",
+                "/nas/project/blog/ABCD/",
                 "/velog/Language/SOLID 원칙");
 
         em.persist(member);

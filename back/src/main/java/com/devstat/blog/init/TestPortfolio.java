@@ -19,7 +19,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("dev")
+//@Profile("dev")
 @Qualifier("portfolio")
 @RequiredArgsConstructor
 public class TestPortfolio {
