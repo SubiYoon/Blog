@@ -2,13 +2,7 @@
 # just reference  : https://just.systems/man/en/
 
 @dev:
-    echo "🧹 Clearing previous builds..." 
-    npm run clear
-
-    echo "📦 Installing dependencies..." 
-    npm install
-
-    echo "🚀 Starting dev server..." 
+    echo "🚀 Starting dev server..."
     npm run dev
 
 @stop port:
